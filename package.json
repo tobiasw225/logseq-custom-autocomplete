@@ -1,0 +1,40 @@
+{
+  "name": "logseq-autocomplete",
+  "version": "0.1.0",
+  "description": "Autocomplete suggestions while typing in Logseq — powered by pages, tags, and a custom dictionary",
+  "main": "dist/index.html",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@logseq/libs": "^0.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0",
+    "vitest": "^3.0.0"
+  },
+  "logseq": {
+    "id": "logseq-autocomplete",
+    "title": "Autocomplete",
+    "icon": "./icon.png",
+    "description": "Suggests pages, tags, and dictionary words while you type",
+    "settings": [
+      {
+        "key": "customDictionary",
+        "type": "string",
+        "default": "",
+        "title": "Custom Dictionary",
+        "description": "Comma-separated list of words to include in autocomplete suggestions. Example: `clojure,datascript,logseq`",
+        "inputAs": "textarea"
+      }
+    ]
+  },
+  "targets": {
+    "main": false
+  }
+}
