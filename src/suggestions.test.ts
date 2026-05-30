@@ -61,4 +61,12 @@ describe("getSuggestions", () => {
     expect(result.length).toBeGreaterThan(0)
     expect(result.every((s: any) => s.score > 0)).toBe(true)
   })
+
+  it("prefers tag over page when names and scores are equal", async () => {
+    mockDB([["buch"]], [["buch"]])
+    const result = await getSuggestions("buch")
+    const match = result.find((s) => s.text === "buch")
+    expect(match).toBeDefined()
+    expect(match!.type).toBe("tag")
+  })
 })

@@ -56,7 +56,6 @@ describe("show", () => {
     expect(provideUI).toHaveBeenCalledTimes(1)
     const call = provideUI.mock.calls[0][0]
     expect(call.key).toBe("ac-dropdown")
-    expect(call.template).toContain('data-on-click="pickSuggestion"')
     expect(call.template).toContain("Buchliste 2024")
     expect(call.template).toContain("buch")
     expect(call.style).toMatchObject({
@@ -65,6 +64,8 @@ describe("show", () => {
       top: "224px",
       zIndex: "9999",
     })
+    expect(call.close).toBe("outside")
+    expect(call.replace).toBe(true)
   })
 
   it("marks first item as selected", async () => {
@@ -91,23 +92,6 @@ describe("show", () => {
     expect(template).toContain(">P<")
     expect(template).toContain(">#<")
     expect(template).toContain(">D<")
-  })
-})
-
-describe("getSuggestionByIndex", () => {
-  it("returns suggestion at given index after show", async () => {
-    const { init, show, getSuggestionByIndex } = await import("./ui-host")
-    init()
-    show(
-      [
-        { text: "a", type: "page", score: 1 },
-        { text: "b", type: "tag", score: 1 },
-      ],
-      0,
-      0,
-    )
-    expect(getSuggestionByIndex(0)?.text).toBe("a")
-    expect(getSuggestionByIndex(1)?.text).toBe("b")
   })
 })
 

@@ -53,17 +53,13 @@ export function getSelected(): Suggestion | null {
   return currentSuggestions[selectedIndex] ?? null
 }
 
-export function getSuggestionByIndex(index: number): Suggestion | undefined {
-  return currentSuggestions[index]
-}
-
 function render(): void {
   if (!visible) return
 
   const itemsHtml = currentSuggestions
     .map(
       (s, i) =>
-        `<div data-index="${i}" data-on-click="pickSuggestion" class="${i === selectedIndex ? "ac-item selected" : "ac-item"}">` +
+        `<div data-index="${i}" class="${i === selectedIndex ? "ac-item selected" : "ac-item"}">` +
         `<span class="ac-badge">${badge(s.type)}</span> ${escapeHtml(s.text)}</div>`,
     )
     .join("")
@@ -77,6 +73,8 @@ function render(): void {
       top: `${posY + 24}px`,
       zIndex: "9999",
     },
+    close: "outside",
+    replace: true,
   })
 }
 

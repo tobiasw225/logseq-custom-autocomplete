@@ -9,14 +9,12 @@ import {
   selectNext,
   selectPrev,
   getSelected,
-  getSuggestionByIndex,
   init as initUI,
 } from "./ui-host"
 
 let lastPrefix = ""
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 let isProcessing = false
-let pickCallback: ((s: Suggestion) => void) | null = null
 
 async function checkAndSuggest(): Promise<void> {
   if (isProcessing) return
@@ -94,8 +92,12 @@ async function insertSuggestion(suggestion: Suggestion): Promise<void> {
 
     const idx = content.indexOf(word, Math.max(0, cursorPos.pos - word.length))
     if (idx === -1) return
+    const replacement =
+      suggestion.type === "page" ? `[[${suggestion.text}]]` :
+      suggestion.type === "tag" ? `#${suggestion.text}` :
+      suggestion.text
     const newContent =
-      content.slice(0, idx) + suggestion.text + content.slice(idx + word.length)
+      content.slice(0, idx) + replacement + content.slice(idx + word.length)
     await logseq.Editor.updateBlock(block.uuid, newContent)
   } catch (err) {
     console.error("autocomplete insert error:", err)
@@ -104,37 +106,8 @@ async function insertSuggestion(suggestion: Suggestion): Promise<void> {
   lastPrefix = ""
 }
 
-async function manualSuggest(): Promise<void> {
-  const block = await logseq.Editor.getCurrentBlock()
-  if (!block) return
-  const cursorPos = await logseq.Editor.getEditingCursorPosition()
-  if (!cursorPos) return
-  const content = block.content ?? ""
-  const word = getWordAtCursor(content, cursorPos.pos)
-  if (!word) return
-
-  const suggestions = await getSuggestions(word)
-  if (suggestions.length > 0) {
-    show(suggestions, cursorPos.left, cursorPos.top)
-  }
-}
-
 function main(): void {
   initUI()
-
-  logseq.provideModel({
-    pickSuggestion(e: MouseEvent) {
-      const item = (e.target as HTMLElement).closest("[data-index]")
-      if (!item) return
-      const idx = parseInt((item as HTMLElement).dataset.index ?? "0", 10)
-      const sug = getSuggestionByIndex(idx)
-      if (sug && pickCallback) pickCallback(sug)
-    },
-  })
-
-  pickCallback = (s: Suggestion) => {
-    insertSuggestion(s).catch(console.error)
-  }
 
   console.log("[ac] loaded")
 
@@ -153,15 +126,6 @@ function main(): void {
     checkAndSuggest().catch(console.error)
   })
 
-  logseq.App.registerCommandPalette(
-    { key: "autocomplete-suggest", label: "Autocomplete: suggest for current word" },
-    () => { manualSuggest().catch(console.error) },
-  )
-
-  logseq.App.registerCommandShortcut(
-    { binding: "mod+shift+space", label: "Autocomplete: suggest" },
-    () => { manualSuggest().catch(console.error) },
-  )
   logseq.App.registerCommandShortcut(
     { binding: "alt+j", label: "Autocomplete: next suggestion" },
     () => { if (isVisible()) selectNext() },
@@ -171,8 +135,16 @@ function main(): void {
     () => { if (isVisible()) selectPrev() },
   )
   logseq.App.registerCommandShortcut(
-    { binding: "mod+shift+enter", label: "Autocomplete: confirm suggestion" },
+    { binding: "mod+space", label: "Autocomplete: confirm suggestion" },
     () => { confirmSuggestion().catch(console.error) },
+  )
+  logseq.App.registerCommandShortcut(
+    { binding: "enter", label: "Autocomplete: confirm suggestion" },
+    () => { if (isVisible()) confirmSuggestion().catch(console.error) },
+  )
+  logseq.App.registerCommandShortcut(
+    { binding: "escape", label: "Autocomplete: dismiss" },
+    () => { if (isVisible()) hide() },
   )
 }
 

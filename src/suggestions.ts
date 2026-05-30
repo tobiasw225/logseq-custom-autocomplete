@@ -63,10 +63,13 @@ export async function getSuggestions(prefix: string): Promise<Suggestion[]> {
   }))
 
   const byKey = new Map<string, Suggestion>()
+  const typePriority: Record<string, number> = { tag: 2, page: 1, dictionary: 0 }
   const insert = (s: Suggestion) => {
     const key = s.text.toLowerCase()
     const existing = byKey.get(key)
-    if (!existing || s.score > existing.score) {
+    if (!existing) { byKey.set(key, s); return }
+    if (s.score > existing.score) { byKey.set(key, s); return }
+    if (s.score === existing.score && typePriority[s.type] > typePriority[existing.type]) {
       byKey.set(key, s)
     }
   }
