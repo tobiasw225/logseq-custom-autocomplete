@@ -19,8 +19,10 @@ A floating dropdown appears with ranked suggestions as you type plain text. Clic
 The plugin queries three sources when you type a word (≥2 characters):
 
 - **Pages** — page titles from your graph that match the prefix
-- **Tags** — tags used in your graph that match the prefix
+- **Tags** — tags used in your graph that match the prefix (detected via both `#tag` inline references and `tags::` properties)
 - **Dictionary** — words from a custom comma-separated list (configurable in plugin settings)
+
+When a name matches both a page and a tag, only the tag entry is shown (tags take priority over pages in the suggestion list).
 
 ## Setup
 
@@ -75,9 +77,10 @@ These words will appear as suggestions when you type a matching prefix.
 2. When content changes, it extracts the word being typed (everything from the last word boundary to the cursor)
 3. Three sources are queried in parallel:
    - **Datalog query** for pages matching the prefix (`:block/name`)
-   - **Datalog query** for tags (`:block/tags`)
+   - **Datalog query** for tags (`:block/tags` and `:block/refs`) — catches both inline `#tag` references and `tags::` properties
    - **In-memory search** of the custom dictionary
-4. Results are merged, deduplicated, and ranked by match score
+4. Results are merged: if a name matches both a page and a tag, the page entry is dropped (tags take priority over pages)
+5. Results are ranked by match score, with tags appearing before pages before dictionary words when scores are equal
 5. A floating dropdown is rendered via `logseq.provideUI`
 6. On selection, `logseq.Editor.updateBlock` replaces the partial word
 

@@ -8,7 +8,7 @@ function mockDB(
   ;(globalThis as any).logseq = {
     DB: {
       datascriptQuery: (query: string, ..._args: any[]) => {
-        if (query.includes("block/tags")) return tags ?? []
+        if (query.includes("block/refs")) return tags ?? []
         return pages ?? []
       },
     },
@@ -43,6 +43,21 @@ describe("queryTags", () => {
   it("returns empty for short prefix", async () => {
     expect(await queryTags("a")).toEqual([])
   })
+
+  it("finds tags created via inline #tag syntax (stored in :block/refs)", async () => {
+    mockDB([], [["doku"]])
+    const result = await queryTags("dok")
+    expect(result).toHaveLength(1)
+    expect(result[0]).toMatchObject({ text: "doku", type: "tag" })
+    expect(result[0].score).toBeGreaterThan(0)
+  })
+
+  it("finds tags via :block/tags as well", async () => {
+    mockDB([], [["doku"]])
+    const result = await queryTags("dok")
+    expect(result).toHaveLength(1)
+    expect(result[0].type).toBe("tag")
+  })
 })
 
 describe("getSuggestions", () => {
@@ -62,11 +77,24 @@ describe("getSuggestions", () => {
     expect(result.every((s: any) => s.score > 0)).toBe(true)
   })
 
-  it("prefers tag over page when names and scores are equal", async () => {
-    mockDB([["buch"]], [["buch"]])
-    const result = await getSuggestions("buch")
-    const match = result.find((s) => s.text === "buch")
-    expect(match).toBeDefined()
-    expect(match!.type).toBe("tag")
+  it("prefers tag over page when a name matches both sources", async () => {
+    mockDB([["doku"]], [["doku"]])
+    const result = await getSuggestions("dok")
+    expect(result).toHaveLength(1)
+    expect(result[0]).toMatchObject({ text: "doku", type: "tag" })
+  })
+
+  it("shows only a tag entry for tag-only names", async () => {
+    mockDB([], [["doku"]])
+    const result = await getSuggestions("dok")
+    expect(result).toHaveLength(1)
+    expect(result[0]).toMatchObject({ text: "doku", type: "tag" })
+  })
+
+  it("shows only a page entry for pure pages (not used as tags)", async () => {
+    mockDB([["pageonly"]], [])
+    const result = await getSuggestions("page")
+    expect(result).toHaveLength(1)
+    expect(result[0]).toMatchObject({ text: "pageonly", type: "page" })
   })
 })

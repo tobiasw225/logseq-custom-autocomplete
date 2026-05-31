@@ -29,24 +29,18 @@ export async function queryTags(prefix: string): Promise<Suggestion[]> {
       `[:find ?name
         :in $ ?prefix
         :where
-        [?b :block/tags ?t]
         [?t :block/name ?name]
-        [(clojure.string/starts-with? ?name ?prefix)]]`,
+        [(clojure.string/starts-with? ?name ?prefix)]
+        (or
+          [?b :block/tags ?t]
+          [?b :block/refs ?t])]`,
       lower,
     )) ?? []
-  const seen = new Set<string>()
-  return results
-    .map(([name]) => name)
-    .filter((name: string) => {
-      if (seen.has(name)) return false
-      seen.add(name)
-      return true
-    })
-    .map((name: string) => ({
-      text: name,
-      type: "tag" as const,
-      score: matchScore(name, lower),
-    }))
+  return results.map(([name]) => ({
+    text: name,
+    type: "tag" as const,
+    score: matchScore(name, lower),
+  }))
 }
 
 export async function getSuggestions(prefix: string): Promise<Suggestion[]> {
@@ -62,20 +56,23 @@ export async function getSuggestions(prefix: string): Promise<Suggestion[]> {
     score: matchScore(w, prefix),
   }))
 
-  const byKey = new Map<string, Suggestion>()
-  const typePriority: Record<string, number> = { tag: 2, page: 1, dictionary: 0 }
-  const insert = (s: Suggestion) => {
-    const key = s.text.toLowerCase()
-    const existing = byKey.get(key)
-    if (!existing) { byKey.set(key, s); return }
-    if (s.score > existing.score) { byKey.set(key, s); return }
-    if (s.score === existing.score && typePriority[s.type] > typePriority[existing.type]) {
-      byKey.set(key, s)
-    }
-  }
-  pages.forEach(insert)
-  tags.forEach(insert)
-  dict.forEach(insert)
+  const tagNames = new Set(tags.map((t) => t.text.toLowerCase()))
+  const filteredPages = pages.filter(
+    (p) => !tagNames.has(p.text.toLowerCase()),
+  )
 
-  return Array.from(byKey.values()).sort((a, b) => b.score - a.score)
+  const seen = new Set<string>()
+  const all = [...tags, ...filteredPages, ...dict]
+  const deduped = all.filter((s) => {
+    const key = `${s.text.toLowerCase()}:${s.type}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+
+  const typeOrder = { tag: 0, page: 1, dictionary: 2 }
+  return deduped.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score
+    return typeOrder[a.type] - typeOrder[b.type]
+  })
 }
