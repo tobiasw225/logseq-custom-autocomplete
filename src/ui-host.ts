@@ -70,12 +70,46 @@ function render(): void {
     style: {
       position: "fixed",
       left: `${posX}px`,
-      top: `${posY + 24}px`,
+      top: `${posY}px`,
       zIndex: "9999",
     },
     close: "outside",
     replace: true,
   })
+
+  hideFloatingHandles()
+}
+
+function hideFloatingHandles(): void {
+  let tries = 0
+  const poll = () => {
+    const docs = [document]
+    if (window.parent?.document && window.parent.document !== document) {
+      docs.push(window.parent.document)
+    }
+    for (const d of docs) {
+      try {
+        const container = d.querySelector('[id$="--ac-dropdown"]')
+        if (!container) continue
+        for (const sel of [".draggable-handle", ".resizable-handle"]) {
+          const el = container.querySelector(sel) as HTMLElement | null
+          if (el) el.style.display = "none"
+        }
+        ;(container as HTMLElement).style.pointerEvents = "none"
+        const contentEl = container.querySelector(
+          ".ls-ui-float-content",
+        ) as HTMLElement | null
+        if (contentEl) contentEl.style.pointerEvents = "auto"
+        container.removeAttribute("draggable")
+        container.removeAttribute("resizable")
+        return
+      } catch {
+        /* cross-origin */
+      }
+    }
+    if (++tries < 20) setTimeout(poll, 50)
+  }
+  poll()
 }
 
 function badge(type: Suggestion["type"]): string {
@@ -92,6 +126,14 @@ function escapeHtml(text: string): string {
 
 export function init(): void {
   logseq.provideStyle(`
+[id$="--ac-dropdown"] {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  min-width: 0 !important;
+  width: fit-content !important;
+  padding: 0 !important;
+}
 .ac-dropdown {
   background: var(--ls-primary-background-color, #fff);
   color: var(--ls-primary-text-color, #333);
@@ -101,7 +143,7 @@ export function init(): void {
   max-height: 240px;
   overflow-y: auto;
   min-width: 180px;
-  padding: 4px 0;
+  max-width: 360px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 13px;
 }

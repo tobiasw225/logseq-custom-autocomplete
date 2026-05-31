@@ -58,7 +58,7 @@ async function checkAndSuggest(): Promise<void> {
         const suggestions = await getSuggestions(word)
         console.log(`[ac] ${suggestions.length} suggestions`)
         if (suggestions.length > 0) {
-          show(suggestions, cursorPos.left, cursorPos.top)
+          show(suggestions, cursorPos.rect.left, cursorPos.rect.top + cursorPos.rect.height + 4)
         } else if (isVisible()) {
           hide()
         }

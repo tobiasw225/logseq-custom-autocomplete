@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 
 vi.mock("@logseq/libs", () => ({}))
@@ -15,23 +16,16 @@ beforeEach(() => {
     provideStyle,
     UI: { showMsg: vi.fn() },
   }
-
-  globalThis.document = {
-    createElement: () => {
-      const el: any = { textContent: "" }
-      Object.defineProperty(el, "innerHTML", {
-        get() {
-          return this.textContent
-        },
-      })
-      return el
-    },
-  } as any
 })
 
 afterEach(() => {
   delete (globalThis as any).logseq
-  delete (globalThis as any).document
+  vi.restoreAllMocks()
+})
+
+afterEach(() => {
+  delete (globalThis as any).logseq
+  vi.restoreAllMocks()
 })
 
 describe("init", () => {
@@ -39,6 +33,7 @@ describe("init", () => {
     const { init } = await import("./ui-host")
     init()
     expect(provideStyle).toHaveBeenCalledTimes(1)
+    expect(provideStyle.mock.calls[0][0]).toContain('[id$="--ac-dropdown"]')
     expect(provideStyle.mock.calls[0][0]).toContain(".ac-dropdown")
   })
 })
@@ -61,7 +56,7 @@ describe("show", () => {
     expect(call.style).toMatchObject({
       position: "fixed",
       left: "100px",
-      top: "224px",
+      top: "200px",
       zIndex: "9999",
     })
     expect(call.close).toBe("outside")
@@ -74,6 +69,34 @@ describe("show", () => {
     show([{ text: "a", type: "page", score: 1 }], 0, 0)
     const template = provideUI.mock.calls[0][0].template
     expect(template).toContain('class="ac-item selected"')
+  })
+
+  it("hides the draggable and resizable handles Logseq adds to floating containers", async () => {
+    const dragHandle = document.createElement("div")
+    dragHandle.className = "draggable-handle"
+    const resizeHandle = document.createElement("div")
+    resizeHandle.className = "resizable-handle"
+    const content = document.createElement("div")
+    content.className = "ls-ui-float-content"
+    const dropdown = document.createElement("div")
+    dropdown.className = "ac-dropdown"
+    content.append(dropdown)
+    const container = document.createElement("div")
+    container.id = "logseq-autocomplete--ac-dropdown"
+    container.className = "lsp-ui-float-container visible"
+    container.append(dragHandle, resizeHandle, content)
+    document.body.append(container)
+
+    const { init, show } = await import("./ui-host")
+    init()
+    show([{ text: "test", type: "page", score: 1 }], 100, 200)
+
+    expect(dragHandle.style.display).toBe("none")
+    expect(resizeHandle.style.display).toBe("none")
+    expect(container.style.pointerEvents).toBe("none")
+    expect(content.style.pointerEvents).toBe("auto")
+    expect(container.getAttribute("draggable")).toBeNull()
+    expect(container.getAttribute("resizable")).toBeNull()
   })
 
   it("renders correct badges per type", async () => {
