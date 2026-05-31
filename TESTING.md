@@ -24,10 +24,10 @@ Use this checklist to verify the plugin works correctly in Logseq Desktop.
 
 ### Custom dictionary
 
-- [ ] Go to plugin settings, set custom dictionary to `clojure,datascript,logseq`
-- [ ] Type `clo` in a block
-- [ ] Expect: "clojure" appears as a suggestion (with `D` badge)
-- [ ] Click it → the word is inserted
+- [x] In Logseq, go to `...` → `Plugins` → gear icon on "Autocomplete" → set the **Custom Dictionary** field to `clojure,datascript,logseq` (see README.md Configuration section if you can't find it)
+- [x] Type `clo` in a block
+- [x] Expect: "clojure" appears as a suggestion (with `D` badge)
+- [x] Click it → the word is inserted
 
 ### No suggestions
 

@@ -4,7 +4,7 @@ Suggests **pages**, **tags**, and **custom dictionary words** while you type in 
 
 ## Use Case
 
-A floating dropdown appears with ranked suggestions as you type plain text. Click a suggestion (or press `Alt+J`/`Alt+K` to navigate and `Ctrl+Shift+Space` to confirm) to replace the partial word.
+A floating dropdown appears with ranked suggestions as you type plain text. Click a suggestion (or press `Alt+J`/`Alt+K` to navigate and `Ctrl+Space` to confirm) to replace the partial word.
 
 ### What changes?
 
@@ -53,15 +53,19 @@ npm run dev
 
 ## Configuration
 
-Go to the plugin settings in Logseq (`...` → `Plugins` → click the gear icon on "Autocomplete").
-
-**Custom Dictionary**: A comma-separated list of words. Example:
-
-```
-clojure,datascript,logseq,autocomplete
-```
+1. In Logseq, click `...` (more) → `Plugins`
+2. Find **Autocomplete** in the plugin list
+3. Click the gear icon (⚙) on the right to open settings
+4. The **Custom Dictionary** field appears — enter a comma-separated list, e.g.:
+   ```
+   clojure,datascript,logseq,autocomplete
+   ```
 
 These words will appear as suggestions when you type a matching prefix.
+
+> The settings key in the Logseq settings DB is `customDictionary`. If you see a raw
+> JSON editor instead of the form above, rebuild the plugin (`npm run build`) and
+> reload it in Logseq.
 
 ## Keyboard Shortcuts
 
@@ -69,7 +73,7 @@ These words will appear as suggestions when you type a matching prefix.
 |----------|--------|
 | `Alt+J` | Next suggestion |
 | `Alt+K` | Previous suggestion |
-| `Ctrl+Shift+Space` | Confirm selected suggestion |
+| `Ctrl+Space` | Confirm selected suggestion |
 | `Escape` | Dismiss suggestion dropdown |
 
 ## How It Works
@@ -85,25 +89,6 @@ These words will appear as suggestions when you type a matching prefix.
 5. A floating dropdown is rendered via `logseq.provideUI`
 6. On selection, `logseq.Editor.updateBlock` replaces the partial word
 
-## Project Structure
-
-```
-logseq-autocomplete/
-├── package.json          # Plugin manifest + settings schema
-├── index.html            # Entry point
-├── vite.config.ts        # Vite bundler config
-├── vitest.config.ts      # Test config
-├── tsconfig.json
-└── src/
-    ├── main.ts           # Lifecycle, polling loop, wiring
-    ├── utils.ts          # Word detection, text parsing, scoring
-    ├── dictionary.ts     # Custom dictionary CRUD
-    ├── suggestions.ts    # DB queries for pages/tags
-    ├── ui.ts             # Floating dropdown UI
-    ├── utils.test.ts     # Unit tests
-    ├── dictionary.test.ts
-    └── suggestions.test.ts
-```
 
 ## License
 

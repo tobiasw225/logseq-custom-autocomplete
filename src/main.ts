@@ -2,6 +2,7 @@ import "@logseq/libs"
 import { getWordAtCursor } from "./utils"
 import type { Suggestion } from "./utils"
 import { getSuggestions } from "./suggestions"
+import { settingsSchema } from "./dictionary"
 import {
   show,
   hide,
@@ -108,6 +109,7 @@ async function insertSuggestion(suggestion: Suggestion): Promise<void> {
 
 function main(): void {
   initUI()
+  logseq.useSettingsSchema(settingsSchema())
 
   console.log("[ac] loaded")
 
