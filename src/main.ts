@@ -1,5 +1,5 @@
 import "@logseq/libs";
-import { settingsSchema } from "./dictionary";
+import { loadAutoWords, settingsSchema } from "./dictionary";
 import { getSuggestions } from "./suggestions";
 import { getSelected, hide, init as initUI, isVisible, selectNext, selectPrev, show } from "./ui-host";
 import { getWordAtCursor } from "./utils";
@@ -103,6 +103,7 @@ async function insertSuggestion(suggestion: Suggestion): Promise<void> {
 function main(): void {
   initUI();
   logseq.useSettingsSchema(settingsSchema());
+  loadAutoWords().catch(console.error);
 
   console.log("[ac] loaded");
 

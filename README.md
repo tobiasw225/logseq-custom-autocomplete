@@ -56,12 +56,24 @@ npm run dev
 1. In Logseq, click `...` (more) → `Plugins`
 2. Find **Autocomplete** in the plugin list
 3. Click the gear icon (⚙) on the right to open settings
-4. The **Custom Dictionary** field appears — enter a comma-separated list, e.g.:
-   ```
-   clojure,datascript,logseq,autocomplete
-   ```
 
+### Manual Dictionary
+
+The **Custom Dictionary** field lets you enter a comma-separated list, e.g.:
+```
+clojure,datascript,logseq,autocomplete
+```
 These words will appear as suggestions when you type a matching prefix.
+
+### Auto-generate Dictionary
+
+Turn on **Auto-generate Dictionary** to automatically collect words from your recent blocks.
+When enabled, the plugin scans your most recently edited blocks at startup and adds words
+longer than 3 characters to the suggestion pool. These words are merged with (not replacing)
+your manual dictionary.
+
+**Max Auto-Dictionary Words** controls how many words are collected (default: 200). This
+ensures fast loading (< 100ms) while providing a rich set of suggestions.
 
 > The settings key in the Logseq settings DB is `customDictionary`. If you see a raw
 > JSON editor instead of the form above, rebuild the plugin (`npm run build`) and
@@ -83,7 +95,7 @@ These words will appear as suggestions when you type a matching prefix.
 3. Three sources are queried in parallel:
    - **Datalog query** for pages matching the prefix (`:block/name`)
    - **Datalog query** for tags (`:block/tags` and `:block/refs`) — catches both inline `#tag` references and `tags::` properties
-   - **In-memory search** of the custom dictionary
+   - **In-memory search** of the custom dictionary (manual + auto-generated, if enabled)
 4. Results are merged: if a name matches both a page and a tag, the page entry is dropped (tags take priority over pages)
 5. Results are ranked by match score, with tags appearing before pages before dictionary words when scores are equal
 5. A floating dropdown is rendered via `logseq.provideUI`
