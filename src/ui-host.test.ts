@@ -184,6 +184,28 @@ describe("keyboard navigation", () => {
   })
 })
 
+describe("Escape dismissal", () => {
+  it("hides the dropdown on Escape keydown", async () => {
+    const { init, show, isVisible } = await import("./ui-host")
+    init()
+    show([{ text: "test", type: "page", score: 1 }], 100, 200)
+    expect(isVisible()).toBe(true)
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
+    expect(isVisible()).toBe(false)
+  })
+
+  it("ignores Escape when already hidden", async () => {
+    const { init, hide, isVisible } = await import("./ui-host")
+    init()
+    hide()
+    expect(isVisible()).toBe(false)
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
+    expect(isVisible()).toBe(false)
+  })
+})
+
 describe("getSelected", () => {
   it("returns currently selected suggestion", async () => {
     const { init, show, selectNext, getSelected } = await import("./ui-host")

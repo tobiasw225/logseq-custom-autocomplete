@@ -124,7 +124,22 @@ function escapeHtml(text: string): string {
   return d.innerHTML
 }
 
+function onKeyDown(e: KeyboardEvent): void {
+  if (e.key === "Escape") {
+    hide()
+  }
+}
+
 export function init(): void {
+  document.addEventListener("keydown", onKeyDown)
+  try {
+    if (window.parent?.document && window.parent.document !== document) {
+      window.parent.document.addEventListener("keydown", onKeyDown)
+    }
+  } catch {
+    /* cross-origin */
+  }
+
   logseq.provideStyle(`
 [id$="--ac-dropdown"] {
   border: none !important;

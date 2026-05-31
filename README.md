@@ -70,6 +70,7 @@ These words will appear as suggestions when you type a matching prefix.
 | `Alt+J` | Next suggestion |
 | `Alt+K` | Previous suggestion |
 | `Ctrl+Shift+Space` | Confirm selected suggestion |
+| `Escape` | Dismiss suggestion dropdown |
 
 ## How It Works
 

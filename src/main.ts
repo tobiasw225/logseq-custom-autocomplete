@@ -142,10 +142,6 @@ function main(): void {
     { binding: "enter", label: "Autocomplete: confirm suggestion" },
     () => { if (isVisible()) confirmSuggestion().catch(console.error) },
   )
-  logseq.App.registerCommandShortcut(
-    { binding: "escape", label: "Autocomplete: dismiss" },
-    () => { if (isVisible()) hide() },
-  )
 }
 
 logseq.ready(main).catch(console.error)

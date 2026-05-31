@@ -16,6 +16,7 @@ beforeEach(() => {
     UI: { showMsg: vi.fn() },
   }
 
+  const listeners: Record<string, Array<(e: any) => void>> = {}
   globalThis.document = {
     createElement: () => {
       const el: any = { textContent: "" }
@@ -25,6 +26,18 @@ beforeEach(() => {
         },
       })
       return el
+    },
+    addEventListener: (type: string, fn: (e: any) => void) => {
+      if (!listeners[type]) listeners[type] = []
+      listeners[type].push(fn)
+    },
+    removeEventListener: (type: string, fn: (e: any) => void) => {
+      if (!listeners[type]) return
+      listeners[type] = listeners[type].filter((f) => f !== fn)
+    },
+    dispatchEvent: (e: any) => {
+      const arr = listeners[e.type] ?? []
+      for (const fn of arr) fn(e)
     },
   } as any
 })
@@ -101,6 +114,20 @@ describe("keyboard navigation + confirm flow", () => {
 
     show([{ text: "x", type: "page", score: 1 }, { text: "y", type: "page", score: 1 }], 0, 0)
     expect(getSelected()?.text).toBe("x")
+  })
+
+  it("hides and retriggers: show → hide → show again works", async () => {
+    const { init, show, hide, isVisible } = await import("./ui-host")
+    init()
+
+    show([{ text: "a", type: "page", score: 1 }], 0, 0)
+    expect(isVisible()).toBe(true)
+
+    hide()
+    expect(isVisible()).toBe(false)
+
+    show([{ text: "b", type: "page", score: 1 }], 0, 0)
+    expect(isVisible()).toBe(true)
   })
 
   it("isVisible reflects current state", async () => {
