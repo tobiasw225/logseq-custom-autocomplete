@@ -14,7 +14,7 @@ Use this checklist to verify the plugin works correctly in Logseq Desktop.
 
 - [x] Open a block and start typing a page name (e.g., type `hel` if you have a page "Hello")
 - [x] Expect: A dropdown appears with the matching page name
-- [x] Click the suggestion → the partial word is replaced with the full page name 
+- [x] Click the suggestion → the partial word is replaced with the full page name
    -> clicking does not work, only keyboard support, OK
 
 ### Tag suggestions

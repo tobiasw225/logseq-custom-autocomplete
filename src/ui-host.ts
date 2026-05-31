@@ -1,60 +1,60 @@
-import "@logseq/libs"
-import type { Suggestion } from "./utils"
+import "@logseq/libs";
+import type { Suggestion } from "./utils";
 
-const UI_KEY = "ac-dropdown"
+const UI_KEY = "ac-dropdown";
 
-let currentSuggestions: Suggestion[] = []
-let selectedIndex = 0
-let visible = false
-let posX = 0
-let posY = 0
+let currentSuggestions: Suggestion[] = [];
+let selectedIndex = 0;
+let visible = false;
+let posX = 0;
+let posY = 0;
 
 export function isVisible(): boolean {
-  return visible
+  return visible;
 }
 
 export function show(suggestions: Suggestion[], x: number, y: number): void {
-  currentSuggestions = suggestions
-  selectedIndex = 0
-  visible = true
-  posX = x
-  posY = y
-  render()
+  currentSuggestions = suggestions;
+  selectedIndex = 0;
+  visible = true;
+  posX = x;
+  posY = y;
+  render();
 }
 
 export function hide(): void {
-  visible = false
-  currentSuggestions = []
-  selectedIndex = 0
+  visible = false;
+  currentSuggestions = [];
+  selectedIndex = 0;
   logseq.provideUI({
     key: UI_KEY,
     template: null,
     reset: true,
     replace: true,
-  })
+  });
 }
 
 export function selectNext(): Suggestion | null {
-  if (!visible || currentSuggestions.length === 0) return null
-  selectedIndex = Math.min(selectedIndex + 1, currentSuggestions.length - 1)
-  render()
-  return currentSuggestions[selectedIndex]
+  if (!visible || currentSuggestions.length === 0) return null;
+  selectedIndex = Math.min(selectedIndex + 1, currentSuggestions.length - 1);
+  render();
+  return currentSuggestions[selectedIndex];
 }
 
 export function selectPrev(): Suggestion | null {
-  if (!visible || currentSuggestions.length === 0) return null
-  selectedIndex = Math.max(selectedIndex - 1, 0)
-  render()
-  return currentSuggestions[selectedIndex]
+  if (!visible || currentSuggestions.length === 0) return null;
+  selectedIndex = Math.max(selectedIndex - 1, 0);
+  render();
+  return currentSuggestions[selectedIndex];
 }
 
 export function getSelected(): Suggestion | null {
-  if (!visible || currentSuggestions.length === 0) return null
-  return currentSuggestions[selectedIndex] ?? null
+  if (!visible || currentSuggestions.length === 0) return null;
+  return currentSuggestions[selectedIndex] ?? null;
 }
 
 function render(): void {
-  if (!visible) return
+  if (!visible) return;
 
   const itemsHtml = currentSuggestions
     .map(
@@ -62,7 +62,7 @@ function render(): void {
         `<div data-index="${i}" class="${i === selectedIndex ? "ac-item selected" : "ac-item"}">` +
         `<span class="ac-badge">${badge(s.type)}</span> ${escapeHtml(s.text)}</div>`,
     )
-    .join("")
+    .join("");
 
   logseq.provideUI({
     key: UI_KEY,
@@ -75,66 +75,64 @@ function render(): void {
     },
     close: "outside",
     replace: true,
-  })
+  });
 
-  hideFloatingHandles()
+  hideFloatingHandles();
 }
 
 function hideFloatingHandles(): void {
-  let tries = 0
+  let tries = 0;
   const poll = () => {
-    const docs = [document]
+    const docs = [document];
     if (window.parent?.document && window.parent.document !== document) {
-      docs.push(window.parent.document)
+      docs.push(window.parent.document);
     }
     for (const d of docs) {
       try {
-        const container = d.querySelector('[id$="--ac-dropdown"]')
-        if (!container) continue
+        const container = d.querySelector('[id$="--ac-dropdown"]');
+        if (!container) continue;
         for (const sel of [".draggable-handle", ".resizable-handle"]) {
-          const el = container.querySelector(sel) as HTMLElement | null
-          if (el) el.style.display = "none"
+          const el = container.querySelector(sel) as HTMLElement | null;
+          if (el) el.style.display = "none";
         }
-        ;(container as HTMLElement).style.pointerEvents = "none"
-        const contentEl = container.querySelector(
-          ".ls-ui-float-content",
-        ) as HTMLElement | null
-        if (contentEl) contentEl.style.pointerEvents = "auto"
-        container.removeAttribute("draggable")
-        container.removeAttribute("resizable")
-        return
+        (container as HTMLElement).style.pointerEvents = "none";
+        const contentEl = container.querySelector(".ls-ui-float-content") as HTMLElement | null;
+        if (contentEl) contentEl.style.pointerEvents = "auto";
+        container.removeAttribute("draggable");
+        container.removeAttribute("resizable");
+        return;
       } catch {
         /* cross-origin */
       }
     }
-    if (++tries < 20) setTimeout(poll, 50)
-  }
-  poll()
+    if (++tries < 20) setTimeout(poll, 50);
+  };
+  poll();
 }
 
 function badge(type: Suggestion["type"]): string {
-  if (type === "page") return "P"
-  if (type === "tag") return "#"
-  return "D"
+  if (type === "page") return "P";
+  if (type === "tag") return "#";
+  return "D";
 }
 
 function escapeHtml(text: string): string {
-  const d = document.createElement("div")
-  d.textContent = text
-  return d.innerHTML
+  const d = document.createElement("div");
+  d.textContent = text;
+  return d.innerHTML;
 }
 
 function onKeyDown(e: KeyboardEvent): void {
   if (e.key === "Escape") {
-    hide()
+    hide();
   }
 }
 
 export function init(): void {
-  document.addEventListener("keydown", onKeyDown)
+  document.addEventListener("keydown", onKeyDown);
   try {
     if (window.parent?.document && window.parent.document !== document) {
-      window.parent.document.addEventListener("keydown", onKeyDown)
+      window.parent.document.addEventListener("keydown", onKeyDown);
     }
   } catch {
     /* cross-origin */
@@ -186,5 +184,5 @@ export function init(): void {
   background: var(--ls-tag-background-color, #e8e8e8);
   color: var(--ls-tag-text-color, #666);
 }
-  `)
+  `);
 }
