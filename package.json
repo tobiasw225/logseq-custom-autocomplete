@@ -1,6 +1,6 @@
 {
   "name": "logseq-autocomplete",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Autocomplete suggestions while typing in Logseq — powered by pages, tags, and a custom dictionary",
   "main": "dist/index.html",
   "scripts": {
@@ -20,6 +20,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "happy-dom": "^20.9.0",
+    "standard-version": "^9.5.0",
     "typescript": "^5.8.3",
     "vite": "^6.0.0",
     "vitest": "^3.0.0"
