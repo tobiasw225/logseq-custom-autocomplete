@@ -3,16 +3,21 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: ^node_modules/
       - id: end-of-file-fixer
+        exclude: ^node_modules/
       - id: check-yaml
       - id: check-json
+        exclude: ^node_modules/
       - id: check-added-large-files
 
-  - repo: https://github.com/biomejs/pre-commit
-    rev: v1.9.4
+  - repo: local
     hooks:
       - id: biome-check
-        args: [--write]
+        name: biome check
+        entry: node_modules/.bin/biome check --write src/
+        language: system
+        pass_filenames: false
 
   - repo: local
     hooks:

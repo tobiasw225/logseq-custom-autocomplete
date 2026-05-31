@@ -42,8 +42,8 @@ describe("show", () => {
     const { init, show } = await import("./ui-host");
     init();
     const suggestions = [
-      { text: "Buchliste 2024", type: "page", score: 10 },
-      { text: "buch", type: "tag", score: 5 },
+      { text: "Buchliste 2024", type: "page" as const, score: 10 },
+      { text: "buch", type: "tag" as const, score: 5 },
     ];
     show(suggestions, 100, 200);
 
@@ -105,7 +105,7 @@ describe("show", () => {
       [
         { text: "page", type: "page", score: 1 },
         { text: "tag", type: "tag", score: 1 },
-        { text: "dict", type: "dict", score: 1 },
+        { text: "dict", type: "dictionary", score: 1 },
       ],
       0,
       0,

@@ -115,22 +115,22 @@ function main(): void {
     const currentBlock = await logseq.Editor.getCurrentBlock();
     if (!currentBlock) return;
 
-    const changed = blocks.some((b: any) => b.uuid === currentBlock.uuid);
+    const changed = blocks.some((b: { uuid: string }) => b.uuid === currentBlock.uuid);
     if (!changed) return;
 
     checkAndSuggest().catch(console.error);
   });
 
-  logseq.App.registerCommandShortcut({ binding: "alt+j", label: "Autocomplete: next suggestion" }, () => {
+  logseq.App.registerCommandShortcut({ binding: "alt+j" }, () => {
     if (isVisible()) selectNext();
   });
-  logseq.App.registerCommandShortcut({ binding: "alt+k", label: "Autocomplete: previous suggestion" }, () => {
+  logseq.App.registerCommandShortcut({ binding: "alt+k" }, () => {
     if (isVisible()) selectPrev();
   });
-  logseq.App.registerCommandShortcut({ binding: "mod+space", label: "Autocomplete: confirm suggestion" }, () => {
+  logseq.App.registerCommandShortcut({ binding: "mod+space" }, () => {
     confirmSuggestion().catch(console.error);
   });
-  logseq.App.registerCommandShortcut({ binding: "enter", label: "Autocomplete: confirm suggestion" }, () => {
+  logseq.App.registerCommandShortcut({ binding: "enter" }, () => {
     if (isVisible()) confirmSuggestion().catch(console.error);
   });
 }

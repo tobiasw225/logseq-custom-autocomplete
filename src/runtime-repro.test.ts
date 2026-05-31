@@ -56,7 +56,7 @@ describe("keyboard navigation + confirm flow", () => {
       [
         { text: "alpha", type: "page", score: 1 },
         { text: "beta", type: "tag", score: 1 },
-        { text: "gamma", type: "dict", score: 1 },
+        { text: "gamma", type: "dictionary", score: 1 },
       ],
       0,
       0,
@@ -88,7 +88,7 @@ describe("keyboard navigation + confirm flow", () => {
       [
         { text: "a", type: "page", score: 1 },
         { text: "b", type: "tag", score: 1 },
-        { text: "c", type: "dict", score: 1 },
+        { text: "c", type: "dictionary", score: 1 },
       ],
       0,
       0,
