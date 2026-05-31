@@ -38,6 +38,20 @@
         "title": "Custom Dictionary",
         "description": "Comma-separated list of words to include in autocomplete suggestions. Example: `clojure,datascript,logseq`",
         "inputAs": "textarea"
+      },
+      {
+        "key": "autoDictionaryEnabled",
+        "type": "boolean",
+        "default": false,
+        "title": "Auto-generate Dictionary",
+        "description": "When enabled, the last N words from your recent blocks are automatically added to the suggestion pool. Words longer than 3 characters are collected."
+      },
+      {
+        "key": "autoDictionaryMaxWords",
+        "type": "number",
+        "default": 200,
+        "title": "Max Auto-Dictionary Words",
+        "description": "Maximum number of words to collect from block history when auto-generate is enabled."
       }
     ]
   },
