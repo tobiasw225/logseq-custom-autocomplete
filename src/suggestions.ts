@@ -68,7 +68,7 @@ export async function getSuggestions(prefix: string): Promise<Suggestion[]> {
     return true;
   });
 
-  const typeOrder = { tag: 0, page: 1, dictionary: 2 };
+  const typeOrder = { tag: 1, page: 2, dictionary: 0 };
   return deduped.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     return typeOrder[a.type] - typeOrder[b.type];
