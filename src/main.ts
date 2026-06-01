@@ -131,9 +131,6 @@ function main(): void {
   logseq.App.registerCommandShortcut({ binding: "mod+space" }, () => {
     confirmSuggestion().catch(console.error);
   });
-  logseq.App.registerCommandShortcut({ binding: "enter" }, () => {
-    if (isVisible()) confirmSuggestion().catch(console.error);
-  });
 }
 
 logseq.ready(main).catch(console.error);
