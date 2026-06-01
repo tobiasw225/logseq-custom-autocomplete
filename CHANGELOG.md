@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.1.4...v0.1.5) (2026-06-01)
+
+
+### Bug Fixes
+
+* shortcut warning ([#5](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/5)) ([1794218](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/1794218b557620cd67ea60738647c9e01fa64085))
+
 ### 0.1.4 (2026-05-31)
 
 
