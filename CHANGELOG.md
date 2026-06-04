@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.1.6...v0.1.7) (2026-06-04)
+
+
+### Features
+
+* Session-Buffer Learning ([#14](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/14)) ([8a934a8](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/8a934a8484fe5a26c84c8796ffcdcc85b80f06cf))
+
 ### [0.1.6](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.1.5...v0.1.6) (2026-06-01)
 
 ### [0.1.5](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.1.4...v0.1.5) (2026-06-01)
