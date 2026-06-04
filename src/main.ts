@@ -1,5 +1,6 @@
 import "@logseq/libs";
 import { loadAutoWords, settingsSchema } from "./dictionary";
+import { learnFromBlockContent, loadSessionWords } from "./session";
 import { getSuggestions } from "./suggestions";
 import { getSelected, hide, init as initUI, isVisible, selectNext, selectPrev, show } from "./ui-host";
 import { getWordAtCursor } from "./utils";
@@ -34,6 +35,7 @@ async function checkAndSuggest(): Promise<void> {
     }
 
     const word = getWordAtCursor(content, cursorPos.pos);
+    learnFromBlockContent(content, word);
     if (!word) {
       if (isVisible()) hide();
       return;
@@ -104,6 +106,7 @@ function main(): void {
   initUI();
   logseq.useSettingsSchema(settingsSchema());
   loadAutoWords().catch(console.error);
+  loadSessionWords();
 
   console.log("[ac] loaded");
 
