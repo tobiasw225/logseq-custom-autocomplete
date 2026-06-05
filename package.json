@@ -3,6 +3,10 @@
   "version": "0.1.7",
   "description": "Autocomplete suggestions while typing in Logseq — powered by pages, tags, and a custom dictionary",
   "main": "dist/index.html",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tobiasw225/logseq-custom-autocomplete.git"
+  },
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
@@ -20,7 +24,9 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "happy-dom": "^20.9.0",
-    "standard-version": "^9.5.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "semantic-release": "^25.0.3",
     "typescript": "^5.8.3",
     "vite": "^6.0.0",
     "vitest": "^3.0.0"
