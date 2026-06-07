@@ -1,3 +1,10 @@
+# [0.2.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.1.7...v0.2.0) (2026-06-07)
+
+
+### Features
+
+* add fequency based ranking ([#16](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/16)) ([87fd828](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/87fd828293116f831dfdd3ab23ba4abf8bb678e1))
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [semantic-release](https://github.com/semantic-release/semantic-release) for commit guidelines.
