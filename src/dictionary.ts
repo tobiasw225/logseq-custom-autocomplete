@@ -33,6 +33,31 @@ export function settingsSchema(): SettingSchemaDesc[] {
       title: "Max Auto-Dictionary Words",
       description: "Maximum number of words to collect from block history when auto-generate is enabled.",
     },
+    {
+      key: "frequencyWeightPage",
+      type: "number",
+      default: 0.3,
+      title: "Page Freq. Weight",
+      description: "How much page usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
+      inputAs: "range",
+    },
+    {
+      key: "frequencyWeightTag",
+      type: "number",
+      default: 0.3,
+      title: "Tag Freq. Weight",
+      description: "How much tag usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
+      inputAs: "range",
+    },
+    {
+      key: "frequencyWeightDict",
+      type: "number",
+      default: 0.3,
+      title: "Dict Freq. Weight",
+      description:
+        "How much dictionary-word usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
+      inputAs: "range",
+    },
   ];
 }
 

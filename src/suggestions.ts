@@ -1,5 +1,5 @@
 import { searchWords } from "./dictionary";
-import { searchSessionWords } from "./session";
+import { getSessionFrequency, searchSessionWords } from "./session";
 import type { Suggestion } from "./utils";
 import { matchScore } from "./utils";
 
@@ -19,6 +19,7 @@ export async function queryPages(prefix: string): Promise<Suggestion[]> {
     text: name,
     type: "page" as const,
     score: matchScore(name, lower),
+    frequency: 0,
   }));
 }
 
@@ -41,6 +42,7 @@ export async function queryTags(prefix: string): Promise<Suggestion[]> {
     text: name,
     type: "tag" as const,
     score: matchScore(name, lower),
+    frequency: 0,
   }));
 }
 
@@ -52,16 +54,18 @@ export async function getSuggestions(prefix: string): Promise<Suggestion[]> {
     Promise.resolve(searchSessionWords(prefix)),
   ]);
 
-  const sessionMapped = sessionWords.map((w) => ({
+  const sessionMapped: Suggestion[] = sessionWords.map((w) => ({
     text: w,
     type: "dictionary" as const,
     score: matchScore(w, prefix),
+    frequency: 0,
   }));
 
   const dict: Suggestion[] = dictWords.map((w) => ({
     text: w,
     type: "dictionary" as const,
     score: matchScore(w, prefix),
+    frequency: 0,
   }));
 
   const mergedDict = [...dict, ...sessionMapped];
@@ -78,9 +82,25 @@ export async function getSuggestions(prefix: string): Promise<Suggestion[]> {
     return true;
   });
 
+  for (const s of deduped) {
+    s.frequency = getSessionFrequency(s.text);
+  }
+
+  const weights: Record<string, number> = {
+    page: Number((logseq.settings as Record<string, unknown>)?.frequencyWeightPage ?? 0.3),
+    tag: Number((logseq.settings as Record<string, unknown>)?.frequencyWeightTag ?? 0.3),
+    dictionary: Number((logseq.settings as Record<string, unknown>)?.frequencyWeightDict ?? 0.3),
+  };
+
+  const maxFreq = deduped.reduce((max, s) => Math.max(max, s.frequency ?? 0), 0);
   const typeOrder = { tag: 1, page: 2, dictionary: 0 };
+
   return deduped.sort((a, b) => {
-    if (b.score !== a.score) return b.score - a.score;
+    const normA = maxFreq > 0 ? ((a.frequency ?? 0) / maxFreq) * 100 : 0;
+    const normB = maxFreq > 0 ? ((b.frequency ?? 0) / maxFreq) * 100 : 0;
+    const finalA = a.score * (1 - weights[a.type]) + normA * weights[a.type];
+    const finalB = b.score * (1 - weights[b.type]) + normB * weights[b.type];
+    if (finalA !== finalB) return finalB - finalA;
     return typeOrder[a.type] - typeOrder[b.type];
   });
 }
