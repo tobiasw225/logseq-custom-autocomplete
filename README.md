@@ -4,7 +4,7 @@ Suggests **pages**, **tags**, and **custom dictionary words** while you type in 
 
 ## Use Case
 
-A floating dropdown appears with ranked suggestions as you type plain text. Click a suggestion (or press `Alt+J`/`Alt+K` to navigate and `Ctrl+Space` to confirm) to replace the partial word.
+A floating dropdown appears with ranked suggestions as you type plain text. Click a suggestion (or press `Alt+J`/`Alt+K` to navigate and `Tab` to confirm) to replace the partial word. When enabled, a single match can be inserted automatically.
 
 ### What changes?
 
@@ -76,6 +76,10 @@ your manual dictionary.
 **Max Auto-Dictionary Words** controls how many words are collected (default: 200). This
 ensures fast loading (< 100ms) while providing a rich set of suggestions.
 
+### Auto-expand on unique match
+
+When enabled (default: off), the plugin inserts the suggestion automatically when exactly one match is found. The built-in 150ms debounce ensures the user has paused typing before the expansion triggers. If the user continues typing during the asynchronous database query, the safety check catches it and shows the dropdown instead.
+
 ### Frequency Weights
 
 Three per-type sliders (0–1) control how much usage frequency influences the ranking:
@@ -101,8 +105,8 @@ The plugin automatically learns words while you type and remembers them across s
 | Shortcut | Action |
 |----------|--------|
 | `Alt+J` | Next suggestion |
-| `Alt+K` | Previous suggestion |
-| `Ctrl+Space` | Confirm selected suggestion |
+| `Alt+,` | Previous suggestion |
+| `Alt+Enter` | Confirm selected suggestion |
 | `Escape` | Dismiss suggestion dropdown |
 
 ## How It Works
