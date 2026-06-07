@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.2.0...v0.3.0) (2026-06-07)
+
+
+### Features
+
+* autoexpand ([#17](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/17)) ([21e16f0](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/21e16f0a30f97d84d45b46c4156f3108d7ac0d61))
+
 # [0.2.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.1.7...v0.2.0) (2026-06-07)
 
 
