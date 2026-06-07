@@ -10,7 +10,7 @@ let lastPrefix = "";
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 let isProcessing = false;
 
-async function checkAndSuggest(): Promise<void> {
+export async function checkAndSuggest(): Promise<void> {
   if (isProcessing) return;
   isProcessing = true;
   try {
@@ -53,6 +53,18 @@ async function checkAndSuggest(): Promise<void> {
         const suggestions = await getSuggestions(word);
         console.log(`[ac] ${suggestions.length} suggestions`);
         if (suggestions.length > 0) {
+          const autoExpand = (logseq.settings as Record<string, unknown>)?.autoExpandOnUnique === true;
+          if (autoExpand && suggestions.length === 1) {
+            const block = await logseq.Editor.getCurrentBlock();
+            const cursor = await logseq.Editor.getEditingCursorPosition();
+            if (block && cursor) {
+              const currentWord = getWordAtCursor(block.content ?? "", cursor.pos);
+              if (currentWord === word) {
+                await insertSuggestion(suggestions[0]);
+                return;
+              }
+            }
+          }
           show(suggestions, cursorPos.rect.left, cursorPos.rect.top + cursorPos.rect.height + 4);
         } else if (isVisible()) {
           hide();
@@ -68,7 +80,7 @@ async function checkAndSuggest(): Promise<void> {
   }
 }
 
-async function confirmSuggestion(): Promise<void> {
+export async function confirmSuggestion(): Promise<void> {
   if (!isVisible()) return;
   const selected = getSelected();
   if (!selected) return;
@@ -85,14 +97,16 @@ async function insertSuggestion(suggestion: Suggestion): Promise<void> {
     const word = getWordAtCursor(content, cursorPos.pos);
     if (!word) return;
 
+    const lowerWord = word.toLowerCase();
+    const lowerSugg = suggestion.text.toLowerCase();
+    const completed = lowerSugg.startsWith(lowerWord)
+      ? word + suggestion.text.slice(lowerWord.length)
+      : suggestion.text;
+
     const idx = content.indexOf(word, Math.max(0, cursorPos.pos - word.length));
     if (idx === -1) return;
     const replacement =
-      suggestion.type === "page"
-        ? `[[${suggestion.text}]]`
-        : suggestion.type === "tag"
-          ? `#${suggestion.text}`
-          : suggestion.text;
+      suggestion.type === "page" ? `[[${completed}]]` : suggestion.type === "tag" ? `#${completed}` : completed;
     const newContent = content.slice(0, idx) + replacement + content.slice(idx + word.length);
     await logseq.Editor.updateBlock(block.uuid, newContent);
   } catch (err) {
@@ -128,10 +142,10 @@ function main(): void {
   logseq.App.registerCommandShortcut({ binding: "alt+j" }, () => {
     if (isVisible()) selectNext();
   });
-  logseq.App.registerCommandShortcut({ binding: "alt+k" }, () => {
+  logseq.App.registerCommandShortcut({ binding: "alt+," }, () => {
     if (isVisible()) selectPrev();
   });
-  logseq.App.registerCommandShortcut({ binding: "mod+space" }, () => {
+  logseq.App.registerCommandShortcut({ binding: "alt+enter" }, () => {
     confirmSuggestion().catch(console.error);
   });
 }

@@ -60,6 +60,13 @@
         "description": "Maximum number of words to collect from block history when auto-generate is enabled."
       },
       {
+        "key": "autoExpandOnUnique",
+        "type": "boolean",
+        "default": false,
+        "title": "Auto-expand on unique match",
+        "description": "When enabled and only one suggestion exists, it is inserted automatically."
+      },
+      {
         "key": "frequencyWeightPage",
         "type": "number",
         "default": 0.3,
