@@ -2,6 +2,7 @@ export interface Suggestion {
   text: string;
   type: "page" | "tag" | "dictionary";
   score: number;
+  frequency?: number;
 }
 
 export function getWordAtCursor(content: string, cursorPos: number, minLength = 2): string | null {

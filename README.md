@@ -76,9 +76,21 @@ your manual dictionary.
 **Max Auto-Dictionary Words** controls how many words are collected (default: 200). This
 ensures fast loading (< 100ms) while providing a rich set of suggestions.
 
+### Frequency Weights
+
+Three per-type sliders (0–1) control how much usage frequency influences the ranking:
+
+| Setting | Default | Effect |
+|---------|---------|--------|
+| **Page Freq. Weight** | 0.3 | How much page frequency matters vs. match quality |
+| **Tag Freq. Weight** | 0.3 | How much tag frequency matters vs. match quality |
+| **Dict Freq. Weight** | 0.3 | How much dictionary-word frequency matters vs. match quality |
+
+A weight of `0` ignores frequency entirely (pure match score), while `1` sorts purely by how often you've typed the word. The default `0.3` gives a gentle boost to frequently used words without overpowering the prefix match.
+
 ### Session Learning
 
-The plugin automatically learns words while you type and remembers them across sessions (persisted in plugin settings). Frequently used words rank higher in suggestions. No configuration needed — it works out of the box.
+The plugin automatically learns words while you type and remembers them across sessions (persisted in plugin settings). Session frequency boosts the ranking of pages, tags, and dictionary words via the per-type frequency weights above. No configuration needed — it works out of the box.
 
 > The settings key in the Logseq settings DB is `customDictionary`. If you see a raw
 > JSON editor instead of the form above, rebuild the plugin (`npm run build`) and
@@ -104,7 +116,7 @@ The plugin automatically learns words while you type and remembers them across s
    - **In-memory search** of the custom dictionary (manual + auto-generated, if enabled)
    - **Session dictionary** — words learned from your typing, ranked by frequency
 5. Results are merged: if a name matches both a page and a tag, the page entry is dropped (tags take priority over pages)
-6. Results are ranked by match score, with dictionary (including session words) appearing before tags before pages when scores are equal
+6. Results are ranked by a blended score: `matchScore * (1 - weight) + frequencyScore * weight`, where `weight` is configurable per type (page/tag/dictionary). Frequency is normalized across the result set (highest frequency = 100). Ties fall back to type order (dictionary → tag → page) for deterministic sorting
 7. A floating dropdown is rendered via `logseq.provideUI`
 8. On selection, `logseq.Editor.updateBlock` replaces the partial word
 
