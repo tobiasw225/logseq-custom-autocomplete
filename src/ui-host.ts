@@ -8,6 +8,7 @@ let selectedIndex = 0;
 let visible = false;
 let posX = 0;
 let posY = 0;
+let confirmCallback: (() => void) | null = null;
 
 export function isVisible(): boolean {
   return visible;
@@ -125,7 +126,14 @@ function escapeHtml(text: string): string {
 function onKeyDown(e: KeyboardEvent): void {
   if (e.key === "Escape") {
     hide();
+  } else if (e.key === "Tab" && visible) {
+    e.preventDefault();
+    confirmCallback?.();
   }
+}
+
+export function onTabConfirm(cb: () => void): void {
+  confirmCallback = cb;
 }
 
 export function init(): void {
