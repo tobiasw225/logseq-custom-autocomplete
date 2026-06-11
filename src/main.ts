@@ -2,7 +2,7 @@ import "@logseq/libs";
 import { loadAutoWords, settingsSchema } from "./dictionary";
 import { learnFromBlockContent, loadSessionWords } from "./session";
 import { getSuggestions } from "./suggestions";
-import { getSelected, hide, init as initUI, isVisible, selectNext, selectPrev, show } from "./ui-host";
+import { getSelected, hide, init as initUI, isVisible, onTabConfirm, selectNext, selectPrev, show } from "./ui-host";
 import { getWordAtCursor } from "./utils";
 import type { Suggestion } from "./utils";
 
@@ -145,7 +145,7 @@ function main(): void {
   logseq.App.registerCommandShortcut({ binding: "alt+," }, () => {
     if (isVisible()) selectPrev();
   });
-  logseq.App.registerCommandShortcut({ binding: "alt+enter" }, () => {
+  onTabConfirm(() => {
     confirmSuggestion().catch(console.error);
   });
 }

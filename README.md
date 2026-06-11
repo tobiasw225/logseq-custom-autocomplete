@@ -4,7 +4,7 @@ Suggests **pages**, **tags**, and **custom dictionary words** while you type in 
 
 ## Use Case
 
-A floating dropdown appears with ranked suggestions as you type plain text. Click a suggestion (or press `Alt+J`/`Alt+K` to navigate and `Tab` to confirm) to replace the partial word. When enabled, a single match can be inserted automatically.
+A floating dropdown appears with ranked suggestions as you type plain text. Click a suggestion (or press `Alt+J`/`Alt+,` to navigate and `Tab` to confirm) to replace the partial word. When enabled, a single match can be inserted automatically.
 
 ### What changes?
 
@@ -106,7 +106,7 @@ The plugin automatically learns words while you type and remembers them across s
 |----------|--------|
 | `Alt+J` | Next suggestion |
 | `Alt+,` | Previous suggestion |
-| `Alt+Enter` | Confirm selected suggestion |
+| `Tab` | Confirm selected suggestion |
 | `Escape` | Dismiss suggestion dropdown |
 
 ## How It Works
