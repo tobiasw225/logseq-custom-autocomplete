@@ -1,3 +1,10 @@
+# [0.4.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.3.0...v0.4.0) (2026-06-11)
+
+
+### Features
+
+* use tab instead of enter to complete ([#19](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/19)) ([86944a2](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/86944a2a5d65953d1055b757a34c66d9bd575e4a))
+
 # [0.3.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.2.0...v0.3.0) (2026-06-07)
 
 
