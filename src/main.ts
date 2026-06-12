@@ -209,9 +209,6 @@ function main(): void {
   logseq.App.registerCommandShortcut({ binding: "alt+," }, () => {
     if (isVisible()) selectPrev();
   });
-  logseq.App.registerCommandShortcut({ binding: "tab" }, () => {
-    confirmSuggestion().catch(console.error);
-  });
   onTabConfirm(() => {
     confirmSuggestion().catch(console.error);
   });

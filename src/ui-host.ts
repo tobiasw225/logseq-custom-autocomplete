@@ -13,6 +13,7 @@ let posX = 0;
 let posY = 0;
 let currentPrefix = "";
 let confirmCallback: (() => void) | null = null;
+let lastFocusedEditor: HTMLElement | null = null;
 
 export function isVisible(): boolean {
   return visible;
@@ -26,6 +27,12 @@ export function show(suggestions: Suggestion[], x: number, y: number, prefix: st
   posX = x;
   posY = y;
   currentPrefix = prefix;
+  try {
+    const d = window.parent?.document;
+    if (d) lastFocusedEditor = d.activeElement as HTMLElement | null;
+  } catch {
+    /* cross-origin */
+  }
   render();
 }
 
@@ -41,6 +48,17 @@ export function hide(): void {
     reset: true,
     replace: true,
   });
+  const el = lastFocusedEditor;
+  lastFocusedEditor = null;
+  if (el) {
+    setTimeout(() => {
+      try {
+        el.focus();
+      } catch {
+        /* stale element */
+      }
+    }, 0);
+  }
 }
 
 export function selectNext(): Suggestion | null {
@@ -122,6 +140,15 @@ function hideFloatingHandles(): void {
         if (contentEl) contentEl.style.pointerEvents = "auto";
         container.removeAttribute("draggable");
         container.removeAttribute("resizable");
+        (container as HTMLElement).tabIndex = 0;
+        (container as HTMLElement).focus({ preventScroll: true });
+        (container as HTMLElement).addEventListener("keydown", (e) => {
+          if (e.key === "Tab" && visible) {
+            e.preventDefault();
+            e.stopPropagation();
+            confirmCallback?.();
+          }
+        });
         return;
       } catch {
         /* cross-origin */
@@ -160,6 +187,7 @@ export function init(): void {
   min-width: 0 !important;
   width: fit-content !important;
   padding: 0 !important;
+  outline: none !important;
 }
 .ac-dropdown {
   background: color-mix(in srgb, var(--ls-primary-background-color, #fff) 72%, transparent);
