@@ -1,4 +1,3 @@
-import { searchWords } from "./dictionary";
 import { getSessionFrequency, searchSessionWords } from "./session";
 import type { Suggestion } from "./utils";
 import { matchScore } from "./utils";
@@ -47,28 +46,18 @@ export async function queryTags(prefix: string): Promise<Suggestion[]> {
 }
 
 export async function getSuggestions(prefix: string): Promise<Suggestion[]> {
-  const [pages, tags, dictWords, sessionWords] = await Promise.all([
+  const [pages, tags, sessionWords] = await Promise.all([
     queryPages(prefix),
     queryTags(prefix),
-    Promise.resolve(searchWords(prefix)),
     Promise.resolve(searchSessionWords(prefix)),
   ]);
 
-  const sessionMapped: Suggestion[] = sessionWords.map((w) => ({
+  const mergedDict: Suggestion[] = sessionWords.map((w) => ({
     text: w,
     type: "dictionary" as const,
     score: matchScore(w, prefix),
     frequency: 0,
   }));
-
-  const dict: Suggestion[] = dictWords.map((w) => ({
-    text: w,
-    type: "dictionary" as const,
-    score: matchScore(w, prefix),
-    frequency: 0,
-  }));
-
-  const mergedDict = [...dict, ...sessionMapped];
 
   const tagNames = new Set(tags.map((t) => t.text.toLowerCase()));
   const filteredPages = pages.filter((p) => !tagNames.has(p.text.toLowerCase()));

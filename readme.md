@@ -1,6 +1,6 @@
 # Logseq Autocomplete
 
-Suggests **pages**, **tags**, and **custom dictionary words** while you type in Logseq.
+Suggests **pages**, **tags**, and **dictionary words** while you type in Logseq.
 
 ## Use Case
 
@@ -11,16 +11,13 @@ A floating dropdown appears with ranked suggestions as you type plain text. Clic
 | Scenario | Default Logseq (no plugin) | With this plugin |
 |---|---|---|
 | Typing `hel` in a block | No suggestion — you just see `hel` as plain text | A dropdown appears showing matching page names (e.g., "Hello"), tags, and dictionary words |
-| Typing `dat` in a block | No suggestion | If "datascript" is in your custom dictionary, it appears as a suggestion |
 | Typing `[[hel` | Default page-ref autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `[[` autocomplete (no change) |
 | Typing `#hel` | Default tag autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `#` autocomplete (no change) |
-| Custom word list | Not available | You can add a comma-separated dictionary in plugin settings and those words will autocomplete as you type |
 
-The plugin queries four sources when you type a word (≥2 characters):
+The plugin queries three sources when you type a word (≥2 characters):
 
 - **Pages** — page titles from your graph that match the prefix
 - **Tags** — tags used in your graph that match the prefix (detected via both `#tag` inline references and `tags::` properties)
-- **Dictionary** — words from a custom comma-separated list (configurable in plugin settings)
 - **Session** — words you have typed in this and earlier sessions, automatically learned and ranked by frequency. On first run, existing words from your blocks are pre-loaded so suggestions are available immediately.
 
 When a name matches both a page and a tag, only the tag entry is shown (tags take priority over pages in the suggestion list).
@@ -39,14 +36,6 @@ When a name matches both a page and a tag, only the tag entry is shown (tags tak
 1. In Logseq, click `...` (more) → `Plugins`
 2. Find **Autocomplete** in the plugin list
 3. Click the gear icon (⚙) on the right to open settings
-
-### Manual Dictionary
-
-The **Custom Dictionary** field lets you enter a comma-separated list, e.g.:
-```
-clojure,datascript,logseq,autocomplete
-```
-These words will appear as suggestions when you type a matching prefix.
 
 ### Auto-expand on unique match
 
@@ -67,7 +56,3 @@ A weight of `0` ignores frequency entirely (pure match score), while `1` sorts p
 ### Session Learning
 
 The plugin automatically learns words while you type and remembers them across sessions (persisted in plugin settings). On first run, existing words from your graph are pre-loaded into the session dictionary, so suggestions appear right away. Session frequency boosts the ranking of pages, tags, and dictionary words via the per-type frequency weights above. No configuration needed — it works out of the box.
-
-> The settings key in the Logseq settings DB is `customDictionary`. If you see a raw
-> JSON editor instead of the form above, rebuild the plugin (`npm run build`) and
-> reload it in Logseq.

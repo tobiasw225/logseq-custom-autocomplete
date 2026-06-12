@@ -1,10 +1,47 @@
 import "@logseq/libs";
-import { settingsSchema } from "./dictionary";
+import type { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin";
 import { learnFromBlockContent, loadSessionWords, preloadSessionWords } from "./session";
 import { getSuggestions } from "./suggestions";
 import { getSelected, hide, init as initUI, isVisible, onTabConfirm, selectNext, selectPrev, show } from "./ui-host";
 import { getWordAtCursor } from "./utils";
 import type { Suggestion } from "./utils";
+
+function settingsSchema(): SettingSchemaDesc[] {
+  return [
+    {
+      key: "autoExpandOnUnique",
+      type: "boolean",
+      default: false,
+      title: "Auto-expand on unique match",
+      description: "When enabled and only one suggestion exists, it is inserted automatically.",
+    },
+    {
+      key: "frequencyWeightPage",
+      type: "number",
+      default: 0.3,
+      title: "Page Freq. Weight",
+      description: "How much page usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
+      inputAs: "range",
+    },
+    {
+      key: "frequencyWeightTag",
+      type: "number",
+      default: 0.3,
+      title: "Tag Freq. Weight",
+      description: "How much tag usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
+      inputAs: "range",
+    },
+    {
+      key: "frequencyWeightDict",
+      type: "number",
+      default: 0.3,
+      title: "Dict Freq. Weight",
+      description:
+        "How much dictionary-word usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
+      inputAs: "range",
+    },
+  ];
+}
 
 let lastPrefix = "";
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
