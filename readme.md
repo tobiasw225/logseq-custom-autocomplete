@@ -14,7 +14,7 @@ A floating dropdown appears with ranked suggestions as you type plain text. Clic
 | Typing `[[hel` | Default page-ref autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `[[` autocomplete (no change) |
 | Typing `#hel` | Default tag autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `#` autocomplete (no change) |
 
-The plugin queries three sources when you type a word (≥2 characters):
+The plugin queries three sources when you type a word (≥1 character):
 
 - **Pages** — page titles from your graph that match the prefix
 - **Tags** — tags used in your graph that match the prefix (detected via both `#tag` inline references and `tags::` properties)
@@ -37,9 +37,17 @@ When a name matches both a page and a tag, only the tag entry is shown (tags tak
 2. Find **Autocomplete** in the plugin list
 3. Click the gear icon (⚙) on the right to open settings
 
+### Suggestion Delay
+
+The **Suggestion Delay (ms)** setting (default: 80) controls how long the plugin waits after the last keystroke before querying suggestions. Lower values feel more responsive; higher values reduce database queries during fast typing.
+
+### Min Interval
+
+The **Min Interval (ms)** setting (default: 80) sets the minimum time between consecutive suggestion queries. This prevents excessive queries when the block content changes rapidly.
+
 ### Auto-expand on unique match
 
-When enabled (default: off), the plugin inserts the suggestion automatically when exactly one match is found. The built-in 150ms debounce ensures the user has paused typing before the expansion triggers. If the user continues typing during the asynchronous database query, the safety check catches it and shows the dropdown instead.
+When enabled (default: off), the plugin inserts the suggestion automatically when exactly one match is found. The configurable debounce ensures the user has paused typing before the expansion triggers. If the user continues typing during the asynchronous database query, the safety check catches it and shows the dropdown instead.
 
 ### Frequency Weights
 

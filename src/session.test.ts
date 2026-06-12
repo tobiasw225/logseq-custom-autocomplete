@@ -72,10 +72,10 @@ describe("learnFromBlockContent", () => {
     expect(searchSessionWords("lo")).toContain("logseq-autocomplete");
   });
 
-  it("learns single-character words but search requires minimum 2 chars", () => {
+  it("learns and searches single-character words", () => {
     learnFromBlockContent("a b c hello", null);
     expect(searchSessionWords("he")).toContain("hello");
-    expect(searchSessionWords("a")).toEqual([]);
+    expect(searchSessionWords("a")).toEqual(["a"]);
   });
 });
 
@@ -97,9 +97,9 @@ describe("searchSessionWords", () => {
     expect(searchSessionWords("xyz")).toEqual([]);
   });
 
-  it("returns empty array for prefix shorter than 2", () => {
+  it("returns results for single-character prefix", () => {
     learnFromBlockContent("hello", null);
-    expect(searchSessionWords("h")).toEqual([]);
+    expect(searchSessionWords("h")).toEqual(["hello"]);
   });
 
   it("case-insensitive prefix matching", () => {

@@ -15,7 +15,7 @@ export function learnFromBlockContent(content: string, cursorWord: string | null
 }
 
 export function searchSessionWords(prefix: string): string[] {
-  if (!prefix || prefix.length < 2) return [];
+  if (!prefix || prefix.length < 1) return [];
   const lower = prefix.toLowerCase();
   const results: Array<[string, number]> = [];
   for (const [word, freq] of sessionWords) {
