@@ -1,3 +1,10 @@
+# [0.6.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.5.1...v0.6.0) (2026-06-12)
+
+
+### Features
+
+* remove custom dict feature ([#27](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/27)) ([10a562f](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/10a562f8e38e7eca6033c522401b19cca04601b8))
+
 ## [0.5.1](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.5.0...v0.5.1) (2026-06-12)
 
 
