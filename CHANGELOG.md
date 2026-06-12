@@ -1,3 +1,10 @@
+## [0.7.1](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.7.0...v0.7.1) (2026-06-12)
+
+
+### Bug Fixes
+
+* false positives ([#29](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/29)) ([e2055ac](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/e2055ac2edcf25d57eee1c75365d5439c481fe03))
+
 # [0.7.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.6.0...v0.7.0) (2026-06-12)
 
 
