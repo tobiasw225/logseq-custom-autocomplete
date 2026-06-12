@@ -5,7 +5,7 @@ export interface Suggestion {
   frequency?: number;
 }
 
-export function getWordAtCursor(content: string, cursorPos: number, minLength = 2): string | null {
+export function getWordAtCursor(content: string, cursorPos: number, minLength = 1): string | null {
   if (!content || cursorPos < 0 || cursorPos > content.length) return null;
 
   const wordChars = /[a-zA-Z0-9_\-\p{L}]/u;

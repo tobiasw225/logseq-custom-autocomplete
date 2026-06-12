@@ -3,7 +3,7 @@ import type { Suggestion } from "./utils";
 import { matchScore } from "./utils";
 
 export async function queryPages(prefix: string): Promise<Suggestion[]> {
-  if (!prefix || prefix.length < 2) return [];
+  if (!prefix || prefix.length < 1) return [];
   const lower = prefix.toLowerCase();
   const results: Array<[string]> =
     (await logseq.DB.datascriptQuery(
@@ -23,7 +23,7 @@ export async function queryPages(prefix: string): Promise<Suggestion[]> {
 }
 
 export async function queryTags(prefix: string): Promise<Suggestion[]> {
-  if (!prefix || prefix.length < 2) return [];
+  if (!prefix || prefix.length < 1) return [];
   const lower = prefix.toLowerCase();
   const results: Array<[string]> =
     (await logseq.DB.datascriptQuery(

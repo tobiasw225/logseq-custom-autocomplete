@@ -46,6 +46,20 @@
         "description": "When enabled and only one suggestion exists, it is inserted automatically."
       },
       {
+        "key": "suggestionDebounceDelay",
+        "type": "number",
+        "default": 80,
+        "title": "Suggestion Delay (ms)",
+        "description": "How long to wait after the last keystroke before querying suggestions (0–500)."
+      },
+      {
+        "key": "minInterval",
+        "type": "number",
+        "default": 80,
+        "title": "Min Interval (ms)",
+        "description": "Minimum time between repeated suggestion queries (0–500)."
+      },
+      {
         "key": "frequencyWeightPage",
         "type": "number",
         "default": 0.3,

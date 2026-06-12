@@ -14,8 +14,8 @@ describe("getWordAtCursor", () => {
     expect(getWordAtCursor("hello world", 2)).toBe("hello");
   });
 
-  it("returns null for short words", () => {
-    expect(getWordAtCursor("a", 0)).toBeNull();
+  it("returns single character words with default minLength=1", () => {
+    expect(getWordAtCursor("a", 0)).toBe("a");
     expect(getWordAtCursor("ab", 1)).toBe("ab");
   });
 

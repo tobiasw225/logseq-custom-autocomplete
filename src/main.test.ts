@@ -82,7 +82,7 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
 
     const { checkAndSuggest } = await import("./main");
     checkAndSuggest().catch(console.error);
-    await vi.advanceTimersByTimeAsync(150);
+    await vi.advanceTimersByTimeAsync(80);
 
     expect(logseq.Editor.updateBlock).toHaveBeenCalledWith("test-uuid", "[[Blaupause]]");
     expect(mockShow).not.toHaveBeenCalled();
@@ -98,7 +98,7 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
 
     const { checkAndSuggest } = await import("./main");
     checkAndSuggest().catch(console.error);
-    await vi.advanceTimersByTimeAsync(150);
+    await vi.advanceTimersByTimeAsync(80);
 
     expect(logseq.Editor.updateBlock).not.toHaveBeenCalled();
     expect(mockShow).toHaveBeenCalledTimes(1);
@@ -117,7 +117,7 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
 
     const { checkAndSuggest } = await import("./main");
     checkAndSuggest().catch(console.error);
-    await vi.advanceTimersByTimeAsync(150);
+    await vi.advanceTimersByTimeAsync(80);
 
     expect(logseq.Editor.updateBlock).not.toHaveBeenCalled();
     expect(mockShow).toHaveBeenCalledTimes(1);
@@ -139,7 +139,7 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
     const { checkAndSuggest } = await import("./main");
     checkAndSuggest().catch(console.error);
 
-    await vi.advanceTimersByTimeAsync(150);
+    await vi.advanceTimersByTimeAsync(80);
 
     // Safety re-read (2nd call) finds "buxy" !== captured "bux" → falls through to show
     expect(logseq.Editor.updateBlock).not.toHaveBeenCalled();
@@ -155,7 +155,7 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
 
     const { checkAndSuggest } = await import("./main");
     checkAndSuggest().catch(console.error);
-    await vi.advanceTimersByTimeAsync(150);
+    await vi.advanceTimersByTimeAsync(80);
 
     expect(mockHide).toHaveBeenCalledTimes(1);
     expect(mockShow).not.toHaveBeenCalled();

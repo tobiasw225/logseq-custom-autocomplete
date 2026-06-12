@@ -16,6 +16,22 @@ function settingsSchema(): SettingSchemaDesc[] {
       description: "When enabled and only one suggestion exists, it is inserted automatically.",
     },
     {
+      key: "suggestionDebounceDelay",
+      type: "number",
+      default: 80,
+      title: "Suggestion Delay (ms)",
+      description: "How long to wait after the last keystroke before querying suggestions (0–500).",
+      inputAs: "range",
+    },
+    {
+      key: "minInterval",
+      type: "number",
+      default: 80,
+      title: "Min Interval (ms)",
+      description: "Minimum time between repeated suggestion queries (0–500).",
+      inputAs: "range",
+    },
+    {
       key: "frequencyWeightPage",
       type: "number",
       default: 0.3,
@@ -83,6 +99,7 @@ export async function checkAndSuggest(): Promise<void> {
     if (word === lastPrefix && isVisible()) return;
     lastPrefix = word;
 
+    const debounceDelay = Number((logseq.settings as Record<string, unknown>)?.suggestionDebounceDelay ?? 80);
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
       try {
@@ -109,7 +126,7 @@ export async function checkAndSuggest(): Promise<void> {
       } catch (err) {
         console.error("autocomplete query error:", err);
       }
-    }, 150);
+    }, debounceDelay);
   } catch (err) {
     console.error("autocomplete check error:", err);
   } finally {
@@ -162,9 +179,10 @@ function main(): void {
   console.log("[ac] loaded");
 
   let lastCheck = 0;
+  const minInterval = Number((logseq.settings as Record<string, unknown>)?.minInterval ?? 80);
   logseq.DB.onChanged(async ({ blocks }) => {
     const now = Date.now();
-    if (now - lastCheck < 200) return;
+    if (now - lastCheck < minInterval) return;
     lastCheck = now;
 
     const currentBlock = await logseq.Editor.getCurrentBlock();
