@@ -79,6 +79,13 @@
         "default": 0.3,
         "title": "Dict Freq. Weight",
         "description": "How much dictionary-word usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only."
+      },
+      {
+        "key": "enableContextFilter",
+        "type": "boolean",
+        "default": true,
+        "title": "Enable context-aware filtering",
+        "description": "When enabled, suggestions are suppressed inside [[wikilinks]], #tags, code blocks, and URLs."
       }
     ]
   },

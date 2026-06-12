@@ -28,7 +28,8 @@ npm run dev
 ## How It Works
 
 1. A debounced callback (configurable via `suggestionDebounceDelay`, default 80ms) fires after the last keystroke to query suggestions
-2. When content changes, it extracts the word being typed (everything from the last word boundary to the cursor)
+2. Before extracting the word, the plugin checks whether the cursor is in an ignored context ([[wikilink]], #tag, code block, URL) via `src/context.ts`. If so, suggestions are suppressed
+3. When content changes, it extracts the word being typed (everything from the last word boundary to the cursor)
 3. The block content is automatically learned and added to a **session dictionary** with frequency tracking, persisted across restarts
 4. Four sources are queried in parallel:
    - **Datalog query** for pages matching the prefix (`:block/name`)

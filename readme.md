@@ -11,8 +11,8 @@ A floating dropdown appears with ranked suggestions as you type plain text. Clic
 | Scenario | Default Logseq (no plugin) | With this plugin |
 |---|---|---|
 | Typing `hel` in a block | No suggestion — you just see `hel` as plain text | A dropdown appears showing matching page names (e.g., "Hello"), tags, and dictionary words |
-| Typing `[[hel` | Default page-ref autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `[[` autocomplete (no change) |
-| Typing `#hel` | Default tag autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `#` autocomplete (no change) |
+| Typing `[[hel` | Default page-ref autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `[[` autocomplete |
+| Typing `#hel` | Default tag autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `#` autocomplete |
 
 The plugin queries three sources when you type a word (≥1 character):
 
@@ -60,6 +60,17 @@ Three per-type sliders (0–1) control how much usage frequency influences the r
 | **Dict Freq. Weight** | 0.3 | How much dictionary-word frequency matters vs. match quality |
 
 A weight of `0` ignores frequency entirely (pure match score), while `1` sorts purely by how often you've typed the word. The default `0.3` gives a gentle boost to frequently used words without overpowering the prefix match.
+
+### Context-Aware Filtering
+
+When **Enable context-aware filtering** is on (default), the plugin suppresses suggestions in contexts where Logseq's own autocomplete or no completion is expected:
+
+- Inside `[[wikilinks]]` — Logseq's built-in page-ref autocomplete takes over
+- Inside `#tags` — Logseq's built-in tag autocomplete takes over
+- Inside code blocks (`` ``` ``) — code should not trigger suggestions
+- Inside URLs — URL text should not trigger suggestions
+
+Disable the setting to show suggestions everywhere, including these contexts.
 
 ### Session Learning
 
