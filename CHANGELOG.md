@@ -1,3 +1,10 @@
+## [0.5.1](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.5.0...v0.5.1) (2026-06-12)
+
+
+### Bug Fixes
+
+* build and remove publish step ([#26](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/26)) ([05a0f83](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/05a0f830ab65f911115035c14c3854b5577f0efd))
+
 # [0.5.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.4.0...v0.5.0) (2026-06-12)
 
 

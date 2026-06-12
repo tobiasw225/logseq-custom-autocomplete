@@ -1,6 +1,6 @@
 {
   "name": "logseq-autocomplete",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Autocomplete suggestions while typing in Logseq — powered by pages, tags, and a custom dictionary",
   "main": "dist/index.html",
   "repository": {
@@ -72,21 +72,21 @@
         "type": "number",
         "default": 0.3,
         "title": "Page Freq. Weight",
-        "description": "How much page usage frequency matters in ranking (0\u20131). 0 = match score only, 1 = frequency only."
+        "description": "How much page usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only."
       },
       {
         "key": "frequencyWeightTag",
         "type": "number",
         "default": 0.3,
         "title": "Tag Freq. Weight",
-        "description": "How much tag usage frequency matters in ranking (0\u20131). 0 = match score only, 1 = frequency only."
+        "description": "How much tag usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only."
       },
       {
         "key": "frequencyWeightDict",
         "type": "number",
         "default": 0.3,
         "title": "Dict Freq. Weight",
-        "description": "How much dictionary-word usage frequency matters in ranking (0\u20131). 0 = match score only, 1 = frequency only."
+        "description": "How much dictionary-word usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only."
       }
     ]
   },
