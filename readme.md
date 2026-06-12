@@ -21,7 +21,7 @@ The plugin queries four sources when you type a word (≥2 characters):
 - **Pages** — page titles from your graph that match the prefix
 - **Tags** — tags used in your graph that match the prefix (detected via both `#tag` inline references and `tags::` properties)
 - **Dictionary** — words from a custom comma-separated list (configurable in plugin settings)
-- **Session** — words you have typed in this and earlier sessions, automatically learned and ranked by frequency
+- **Session** — words you have typed in this and earlier sessions, automatically learned and ranked by frequency. On first run, existing words from your blocks are pre-loaded so suggestions are available immediately.
 
 When a name matches both a page and a tag, only the tag entry is shown (tags take priority over pages in the suggestion list).
 
@@ -48,16 +48,6 @@ clojure,datascript,logseq,autocomplete
 ```
 These words will appear as suggestions when you type a matching prefix.
 
-### Auto-generate Dictionary
-
-Turn on **Auto-generate Dictionary** to automatically collect words from your recent blocks.
-When enabled, the plugin scans your most recently edited blocks at startup and adds words
-longer than 3 characters to the suggestion pool. These words are merged with (not replacing)
-your manual dictionary.
-
-**Max Auto-Dictionary Words** controls how many words are collected (default: 200). This
-ensures fast loading (< 100ms) while providing a rich set of suggestions.
-
 ### Auto-expand on unique match
 
 When enabled (default: off), the plugin inserts the suggestion automatically when exactly one match is found. The built-in 150ms debounce ensures the user has paused typing before the expansion triggers. If the user continues typing during the asynchronous database query, the safety check catches it and shows the dropdown instead.
@@ -76,7 +66,7 @@ A weight of `0` ignores frequency entirely (pure match score), while `1` sorts p
 
 ### Session Learning
 
-The plugin automatically learns words while you type and remembers them across sessions (persisted in plugin settings). Session frequency boosts the ranking of pages, tags, and dictionary words via the per-type frequency weights above. No configuration needed — it works out of the box.
+The plugin automatically learns words while you type and remembers them across sessions (persisted in plugin settings). On first run, existing words from your graph are pre-loaded into the session dictionary, so suggestions appear right away. Session frequency boosts the ranking of pages, tags, and dictionary words via the per-type frequency weights above. No configuration needed — it works out of the box.
 
 > The settings key in the Logseq settings DB is `customDictionary`. If you see a raw
 > JSON editor instead of the form above, rebuild the plugin (`npm run build`) and

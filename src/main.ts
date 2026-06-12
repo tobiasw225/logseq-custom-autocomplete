@@ -1,6 +1,6 @@
 import "@logseq/libs";
-import { loadAutoWords, settingsSchema } from "./dictionary";
-import { learnFromBlockContent, loadSessionWords } from "./session";
+import { settingsSchema } from "./dictionary";
+import { learnFromBlockContent, loadSessionWords, preloadSessionWords } from "./session";
 import { getSuggestions } from "./suggestions";
 import { getSelected, hide, init as initUI, isVisible, onTabConfirm, selectNext, selectPrev, show } from "./ui-host";
 import { getWordAtCursor } from "./utils";
@@ -119,8 +119,8 @@ async function insertSuggestion(suggestion: Suggestion): Promise<void> {
 function main(): void {
   initUI();
   logseq.useSettingsSchema(settingsSchema());
-  loadAutoWords().catch(console.error);
   loadSessionWords();
+  preloadSessionWords().catch(console.error);
 
   console.log("[ac] loaded");
 
