@@ -118,7 +118,7 @@ describe("getSuggestions", () => {
   });
 
   it("ranks higher frequency dictionary words above lower frequency with same match score", async () => {
-    mockDB([], [], { customDictionary: "foo,foz", autoDictionaryEnabled: false });
+    mockDB([], []);
     learnFromBlockContent("foo foo foo foo foo", null);
     learnFromBlockContent("foz foz", null);
     const result = await getSuggestions("fo");
@@ -144,8 +144,6 @@ describe("getSuggestions", () => {
 
   it("weight=1 sorts purely by frequency for dictionary words", async () => {
     mockDB([], [], {
-      customDictionary: "foo,foz",
-      autoDictionaryEnabled: false,
       frequencyWeightPage: 1,
       frequencyWeightTag: 1,
       frequencyWeightDict: 1,
@@ -161,8 +159,6 @@ describe("getSuggestions", () => {
 
   it("per-type weights: dict weight 1, page weight 0 — only dict sorted by frequency", async () => {
     mockDB([["python"], ["pytest"]], [], {
-      customDictionary: "pythagoras,pylon",
-      autoDictionaryEnabled: false,
       frequencyWeightPage: 0,
       frequencyWeightTag: 0,
       frequencyWeightDict: 1,

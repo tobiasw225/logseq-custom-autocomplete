@@ -33,7 +33,6 @@ npm run dev
 4. Four sources are queried in parallel:
    - **Datalog query** for pages matching the prefix (`:block/name`)
    - **Datalog query** for tags (`:block/tags` and `:block/refs`) — catches both inline `#tag` references and `tags::` properties
-    - **Custom dictionary** — user-defined comma-separated word list
    - **Session dictionary** — words learned from your typing, ranked by frequency
 5. Results are merged: if a name matches both a page and a tag, the page entry is dropped (tags take priority over pages)
 6. Results are ranked by a blended score: `matchScore * (1 - weight) + frequencyScore * weight`, where `weight` is configurable per type (page/tag/dictionary). Frequency is normalized across the result set (highest frequency = 100). Ties fall back to type order (dictionary → tag → page) for deterministic sorting
