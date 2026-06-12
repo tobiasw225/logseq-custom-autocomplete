@@ -3,36 +3,62 @@ import type { Suggestion } from "./utils";
 
 const UI_KEY = "ac-dropdown";
 
+const MAX_VISIBLE = 4;
+
 let currentSuggestions: Suggestion[] = [];
 let selectedIndex = 0;
 let visible = false;
+let hasMore = false;
 let posX = 0;
 let posY = 0;
+let currentPrefix = "";
 let confirmCallback: (() => void) | null = null;
+let lastFocusedEditor: HTMLElement | null = null;
 
 export function isVisible(): boolean {
   return visible;
 }
 
-export function show(suggestions: Suggestion[], x: number, y: number): void {
-  currentSuggestions = suggestions;
+export function show(suggestions: Suggestion[], x: number, y: number, prefix: string): void {
+  currentSuggestions = suggestions.slice(0, MAX_VISIBLE);
+  hasMore = suggestions.length > MAX_VISIBLE;
   selectedIndex = 0;
   visible = true;
   posX = x;
   posY = y;
+  currentPrefix = prefix;
+  try {
+    const d = window.parent?.document;
+    if (d) lastFocusedEditor = d.activeElement as HTMLElement | null;
+  } catch {
+    /* cross-origin */
+  }
   render();
 }
 
 export function hide(): void {
   visible = false;
   currentSuggestions = [];
+  hasMore = false;
   selectedIndex = 0;
+  currentPrefix = "";
   logseq.provideUI({
     key: UI_KEY,
     template: null,
     reset: true,
     replace: true,
   });
+  const el = lastFocusedEditor;
+  lastFocusedEditor = null;
+  if (el) {
+    setTimeout(() => {
+      try {
+        el.focus();
+      } catch {
+        /* stale element */
+      }
+    }, 0);
+  }
 }
 
 export function selectNext(): Suggestion | null {
@@ -54,20 +80,33 @@ export function getSelected(): Suggestion | null {
   return currentSuggestions[selectedIndex] ?? null;
 }
 
+export function getCurrentSuggestions(): Suggestion[] {
+  return currentSuggestions;
+}
+
+export function getSelectedIndex(): number {
+  return selectedIndex;
+}
+
 function render(): void {
   if (!visible) return;
 
+  const lowerPrefix = currentPrefix.toLowerCase();
   const itemsHtml = currentSuggestions
-    .map(
-      (s, i) =>
-        `<div data-index="${i}" class="${i === selectedIndex ? "ac-item selected" : "ac-item"}">` +
-        `<span class="ac-badge">${badge(s.type)}</span> ${escapeHtml(s.text)}</div>`,
-    )
+    .map((s, i) => {
+      const lowerSugg = s.text.toLowerCase();
+      const suffix = lowerSugg.startsWith(lowerPrefix) ? s.text.slice(lowerPrefix.length) : s.text;
+      const typeLabel = s.type === "page" ? " (p)" : s.type === "tag" ? " (t)" : "";
+      const cls = i === selectedIndex ? "ac-item selected" : "ac-item";
+      return `<div data-index="${i}" class="${cls}">${suffix}<span class="ac-type">${typeLabel}</span></div>`;
+    })
     .join("");
+
+  const moreHtml = hasMore ? '<div class="ac-more">…</div>' : "";
 
   logseq.provideUI({
     key: UI_KEY,
-    template: `<div class="ac-dropdown">${itemsHtml}</div>`,
+    template: `<div class="ac-dropdown">${itemsHtml}${moreHtml}</div>`,
     style: {
       position: "fixed",
       left: `${posX}px`,
@@ -101,6 +140,15 @@ function hideFloatingHandles(): void {
         if (contentEl) contentEl.style.pointerEvents = "auto";
         container.removeAttribute("draggable");
         container.removeAttribute("resizable");
+        (container as HTMLElement).tabIndex = 0;
+        (container as HTMLElement).focus({ preventScroll: true });
+        (container as HTMLElement).addEventListener("keydown", (e) => {
+          if (e.key === "Tab" && visible) {
+            e.preventDefault();
+            e.stopPropagation();
+            confirmCallback?.();
+          }
+        });
         return;
       } catch {
         /* cross-origin */
@@ -111,24 +159,9 @@ function hideFloatingHandles(): void {
   poll();
 }
 
-function badge(type: Suggestion["type"]): string {
-  if (type === "page") return "P";
-  if (type === "tag") return "#";
-  return "D";
-}
-
-function escapeHtml(text: string): string {
-  const d = document.createElement("div");
-  d.textContent = text;
-  return d.innerHTML;
-}
-
 function onKeyDown(e: KeyboardEvent): void {
   if (e.key === "Escape") {
     hide();
-  } else if (e.key === "Tab" && visible) {
-    e.preventDefault();
-    confirmCallback?.();
   }
 }
 
@@ -140,7 +173,7 @@ export function init(): void {
   document.addEventListener("keydown", onKeyDown);
   try {
     if (window.parent?.document && window.parent.document !== document) {
-      window.parent.document.addEventListener("keydown", onKeyDown);
+      window.parent.document.addEventListener("keydown", onKeyDown, true);
     }
   } catch {
     /* cross-origin */
@@ -154,43 +187,37 @@ export function init(): void {
   min-width: 0 !important;
   width: fit-content !important;
   padding: 0 !important;
+  outline: none !important;
 }
 .ac-dropdown {
-  background: var(--ls-primary-background-color, #fff);
-  color: var(--ls-primary-text-color, #333);
-  border: 1px solid var(--ls-border-color, #ddd);
+  background: color-mix(in srgb, var(--ls-primary-background-color, #fff) 72%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid color-mix(in srgb, var(--ls-primary-text-color, #333) 10%, transparent);
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  max-height: 240px;
-  overflow-y: auto;
-  min-width: 180px;
-  max-width: 360px;
+  padding: 2px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  color: var(--ls-primary-text-color, #333);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.4;
 }
 .ac-item {
-  padding: 6px 12px;
+  padding: 2px 6px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  opacity: 0.45;
 }
-.ac-item:hover,
 .ac-item.selected {
-  background: var(--ls-secondary-background-color, #f0f0f0);
+  opacity: 0.8;
 }
-.ac-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 3px;
-  font-size: 11px;
-  font-weight: 600;
-  flex-shrink: 0;
-  background: var(--ls-tag-background-color, #e8e8e8);
-  color: var(--ls-tag-text-color, #666);
+.ac-more {
+  padding: 0 6px;
+  opacity: 0.25;
+  pointer-events: none;
+  user-select: none;
+}
+.ac-type {
+  font-size: 0.8em;
+  opacity: 0.5;
 }
   `);
 }

@@ -5,22 +5,29 @@ export interface Suggestion {
   frequency?: number;
 }
 
-export function getWordAtCursor(content: string, cursorPos: number, minLength = 1): string | null {
+export function getWordBounds(
+  content: string,
+  cursorPos: number,
+): { start: number; end: number; word: string; prefix: string } | null {
   if (!content || cursorPos < 0 || cursorPos > content.length) return null;
 
   const wordChars = /[a-zA-Z0-9_\-\p{L}]/u;
 
-  // walk backward from cursor to find word start
   let start = cursorPos;
   while (start > 0 && wordChars.test(content[start - 1])) start--;
 
-  // walk forward to find word end (cursorPos may not be at the end)
   let end = cursorPos;
   while (end < content.length && wordChars.test(content[end])) end++;
 
   const word = content.slice(start, end);
-  if (word.length < minLength) return null;
-  return word || null;
+  const prefix = content.slice(start, cursorPos);
+  return { start, end, word, prefix };
+}
+
+export function getWordAtCursor(content: string, cursorPos: number, minLength = 1): string | null {
+  const bounds = getWordBounds(content, cursorPos);
+  if (!bounds || bounds.word.length < minLength) return null;
+  return bounds.word;
 }
 
 export function matchScore(text: string, prefix: string): number {

@@ -4,13 +4,13 @@ Suggests **pages**, **tags**, and **dictionary words** while you type in Logseq.
 
 ## Use Case
 
-A floating dropdown appears with ranked suggestions as you type plain text. Click a suggestion (or press `Alt+J`/`Alt+,` to navigate and `Tab` to confirm) to replace the partial word. When enabled, a single match can be inserted automatically.
+When you type plain text, a compact dropdown appears showing completion suffixes (the remaining part of the word). Each entry is shown as gray ghost text — just the suffix after what you've already typed. Pages and tags are labeled with a small `(p)` or `(t)`; dictionary words have no label. The dropdown shows up to 4 items and is positioned below the current block. Click a suggestion (or press `Alt+J`/`Alt+,` to navigate and `Tab` to confirm) to replace the partial word. When enabled, a single match can be inserted automatically.
 
 ### What changes?
 
 | Scenario | Default Logseq (no plugin) | With this plugin |
 |---|---|---|
-| Typing `hel` in a block | No suggestion — you just see `hel` as plain text | A dropdown appears showing matching page names (e.g., "Hello"), tags, and dictionary words |
+| Typing `hel` in a block | No suggestion — you just see `hel` as plain text | A compact dropdown appears below the block showing completion suffixes (e.g., `lo (p)`, `p (t)`). The first entry is pre-selected. |
 | Typing `[[hel` | Default page-ref autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `[[` autocomplete |
 | Typing `#hel` | Default tag autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `#` autocomplete |
 

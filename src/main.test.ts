@@ -69,7 +69,7 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
     });
     logseq.Editor.getEditingCursorPosition.mockResolvedValue({
       pos: cursorPos,
-      rect: { left: 100, top: 200, height: 20 },
+      rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 },
     });
   }
 
@@ -132,8 +132,8 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
       .mockResolvedValueOnce({ uuid: "test-uuid", content: "bux" })
       .mockResolvedValueOnce({ uuid: "test-uuid", content: "buxy" });
     logseq.Editor.getEditingCursorPosition
-      .mockResolvedValueOnce({ pos: 3, rect: { left: 100, top: 200, height: 20 } })
-      .mockResolvedValueOnce({ pos: 4, rect: { left: 100, top: 200, height: 20 } });
+      .mockResolvedValueOnce({ pos: 3, rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 } })
+      .mockResolvedValueOnce({ pos: 4, rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 } });
     mockGetSuggestions.mockResolvedValue([{ text: "buch", type: "page", score: 100 }]);
 
     const { checkAndSuggest } = await import("./main");
@@ -182,7 +182,7 @@ describe("confirmSuggestion", () => {
     });
     logseq.Editor.getEditingCursorPosition.mockResolvedValue({
       pos: 4,
-      rect: { left: 100, top: 200, height: 20 },
+      rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 },
     });
 
     const { confirmSuggestion } = await import("./main");
@@ -207,7 +207,7 @@ describe("confirmSuggestion", () => {
     });
     logseq.Editor.getEditingCursorPosition.mockResolvedValue({
       pos: 5,
-      rect: { left: 100, top: 200, height: 20 },
+      rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 },
     });
 
     const { confirmSuggestion } = await import("./main");

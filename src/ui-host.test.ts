@@ -45,13 +45,15 @@ describe("show", () => {
       { text: "Buchliste 2024", type: "page" as const, score: 10 },
       { text: "buch", type: "tag" as const, score: 5 },
     ];
-    show(suggestions, 100, 200);
+    show(suggestions, 100, 200, "");
 
     expect(provideUI).toHaveBeenCalledTimes(1);
     const call = provideUI.mock.calls[0][0];
     expect(call.key).toBe("ac-dropdown");
     expect(call.template).toContain("Buchliste 2024");
+    expect(call.template).toContain("(p)");
     expect(call.template).toContain("buch");
+    expect(call.template).toContain("(t)");
     expect(call.style).toMatchObject({
       position: "fixed",
       left: "100px",
@@ -65,7 +67,7 @@ describe("show", () => {
   it("marks first item as selected", async () => {
     const { init, show } = await import("./ui-host");
     init();
-    show([{ text: "a", type: "page", score: 1 }], 0, 0);
+    show([{ text: "a", type: "page", score: 1 }], 0, 0, "");
     const template = provideUI.mock.calls[0][0].template;
     expect(template).toContain('class="ac-item selected"');
   });
@@ -88,7 +90,7 @@ describe("show", () => {
 
     const { init, show } = await import("./ui-host");
     init();
-    show([{ text: "test", type: "page", score: 1 }], 100, 200);
+    show([{ text: "test", type: "page", score: 1 }], 100, 200, "");
 
     expect(dragHandle.style.display).toBe("none");
     expect(resizeHandle.style.display).toBe("none");
@@ -98,22 +100,25 @@ describe("show", () => {
     expect(container.getAttribute("resizable")).toBeNull();
   });
 
-  it("renders correct badges per type", async () => {
+  it("renders suffix with type labels", async () => {
     const { init, show } = await import("./ui-host");
     init();
     show(
       [
-        { text: "page", type: "page", score: 1 },
-        { text: "tag", type: "tag", score: 1 },
-        { text: "dict", type: "dictionary", score: 1 },
+        { text: "hello", type: "page", score: 1 },
+        { text: "#tag", type: "tag", score: 1 },
+        { text: "word", type: "dictionary", score: 1 },
       ],
       0,
       0,
+      "hel",
     );
     const template = provideUI.mock.calls[0][0].template;
-    expect(template).toContain(">P<");
-    expect(template).toContain(">#<");
-    expect(template).toContain(">D<");
+    expect(template).toContain("lo");
+    expect(template).toContain("(p)");
+    expect(template).toContain("g");
+    expect(template).toContain("(t)");
+    expect(template).toContain("rd");
   });
 });
 
@@ -121,7 +126,7 @@ describe("hide", () => {
   it("calls provideUI with null template", async () => {
     const { init, hide, show } = await import("./ui-host");
     init();
-    show([{ text: "a", type: "page", score: 1 }], 0, 0);
+    show([{ text: "a", type: "page", score: 1 }], 0, 0, "");
     provideUI.mockClear();
 
     hide();
@@ -145,6 +150,7 @@ describe("keyboard navigation", () => {
       ],
       0,
       0,
+      "",
     );
     provideUI.mockClear();
 
@@ -166,6 +172,7 @@ describe("keyboard navigation", () => {
       ],
       0,
       0,
+      "",
     );
     provideUI.mockClear();
 
@@ -187,7 +194,7 @@ describe("Escape dismissal", () => {
   it("hides the dropdown on Escape keydown", async () => {
     const { init, show, isVisible } = await import("./ui-host");
     init();
-    show([{ text: "test", type: "page", score: 1 }], 100, 200);
+    show([{ text: "test", type: "page", score: 1 }], 100, 200, "");
     expect(isVisible()).toBe(true);
 
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
@@ -216,6 +223,7 @@ describe("getSelected", () => {
       ],
       0,
       0,
+      "",
     );
 
     expect(getSelected()?.text).toBe("a");
@@ -227,5 +235,52 @@ describe("getSelected", () => {
     const { hide, getSelected } = await import("./ui-host");
     hide();
     expect(getSelected()).toBeNull();
+  });
+});
+
+describe("getCurrentSuggestions", () => {
+  it("returns the current suggestions list", async () => {
+    const { init, show, getCurrentSuggestions } = await import("./ui-host");
+    init();
+    const suggestions = [
+      { text: "a", type: "page" as const, score: 1 },
+      { text: "b", type: "tag" as const, score: 1 },
+    ];
+    show(suggestions, 0, 0, "");
+    expect(getCurrentSuggestions()).toEqual(suggestions);
+  });
+
+  it("returns empty array when hidden", async () => {
+    const { hide, getCurrentSuggestions } = await import("./ui-host");
+    hide();
+    expect(getCurrentSuggestions()).toEqual([]);
+  });
+});
+
+describe("getSelectedIndex", () => {
+  it("returns 0 initially after show", async () => {
+    const { init, show, getSelectedIndex } = await import("./ui-host");
+    init();
+    show([{ text: "a", type: "page", score: 1 }], 0, 0, "");
+    expect(getSelectedIndex()).toBe(0);
+  });
+
+  it("returns current index after navigation", async () => {
+    const { init, show, selectNext, getSelectedIndex } = await import("./ui-host");
+    init();
+    show(
+      [
+        { text: "a", type: "page", score: 1 },
+        { text: "b", type: "page", score: 1 },
+        { text: "c", type: "page", score: 1 },
+      ],
+      0,
+      0,
+      "",
+    );
+    selectNext();
+    expect(getSelectedIndex()).toBe(1);
+    selectNext();
+    expect(getSelectedIndex()).toBe(2);
   });
 });
