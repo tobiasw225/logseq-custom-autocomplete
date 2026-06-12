@@ -1,3 +1,10 @@
+# [0.7.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.6.0...v0.7.0) (2026-06-12)
+
+
+### Features
+
+* configurable suggestion delay and reduced min prefix length ([#28](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/28)) ([9b31bb7](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/9b31bb71242e0f10091f8d43386e41d7d54f086d))
+
 # [0.6.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.5.1...v0.6.0) (2026-06-12)
 
 
