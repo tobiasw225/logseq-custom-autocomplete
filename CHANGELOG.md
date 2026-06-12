@@ -1,3 +1,10 @@
+# [0.5.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.4.0...v0.5.0) (2026-06-12)
+
+
+### Features
+
+* merge auto-dict feature ([#25](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/25)) ([8b10497](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/8b1049751032785ade69af982a7d06250a15cab7))
+
 # [0.4.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.3.0...v0.4.0) (2026-06-11)
 
 
