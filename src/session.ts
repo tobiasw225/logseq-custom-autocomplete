@@ -61,3 +61,33 @@ export function schedulePersist(): void {
     saveSessionWords();
   }, 2000);
 }
+
+export async function preloadSessionWords(): Promise<void> {
+  let results: Array<[string]> = [];
+  try {
+    results =
+      (await logseq.DB.datascriptQuery("[:find ?content :limit 2000 :where [?b :block/content ?content]]")) ?? [];
+  } catch {
+    return;
+  }
+
+  const wordPattern = /[a-zA-Z0-9_\-\p{L}]+/gu;
+  let added = 0;
+  for (const [content] of results) {
+    const matches = content.match(wordPattern);
+    if (!matches) continue;
+    for (const w of matches) {
+      if (w.length > 3) {
+        const lower = w.toLowerCase();
+        if (!sessionWords.has(lower)) {
+          sessionWords.set(lower, 1);
+          added++;
+        }
+      }
+    }
+  }
+
+  if (added > 0) {
+    saveSessionWords();
+  }
+}

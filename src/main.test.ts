@@ -11,6 +11,7 @@ vi.mock("./suggestions", () => ({
 vi.mock("./session", () => ({
   learnFromBlockContent: vi.fn(),
   loadSessionWords: vi.fn(),
+  preloadSessionWords: vi.fn(),
 }));
 
 const mockShow = vi.fn();
