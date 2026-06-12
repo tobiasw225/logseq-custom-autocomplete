@@ -1,5 +1,6 @@
 import "@logseq/libs";
 import type { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin";
+import { isInIgnoredContext } from "./context";
 import { learnFromBlockContent, loadSessionWords, preloadSessionWords } from "./session";
 import { getSuggestions } from "./suggestions";
 import { getSelected, hide, init as initUI, isVisible, onTabConfirm, selectNext, selectPrev, show } from "./ui-host";
@@ -56,6 +57,13 @@ function settingsSchema(): SettingSchemaDesc[] {
         "How much dictionary-word usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
       inputAs: "range",
     },
+    {
+      key: "enableContextFilter",
+      type: "boolean",
+      default: true,
+      title: "Enable context-aware filtering",
+      description: "When enabled, suggestions are suppressed inside [[wikilinks]], #tags, code blocks, and URLs.",
+    },
   ];
 }
 
@@ -78,6 +86,13 @@ export async function checkAndSuggest(): Promise<void> {
     if (!cursorPos) {
       if (isVisible()) hide();
       return;
+    }
+
+    if ((logseq.settings as Record<string, unknown>)?.enableContextFilter !== false) {
+      if (isInIgnoredContext(content, cursorPos.pos)) {
+        if (isVisible()) hide();
+        return;
+      }
     }
 
     const atEnd = cursorPos.pos >= content.length;
