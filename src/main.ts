@@ -109,8 +109,6 @@ export async function checkAndSuggest(): Promise<void> {
       return;
     }
 
-    console.log(`[ac] word: "${word}"`);
-
     if (word === lastPrefix && isVisible()) return;
     lastPrefix = word;
 
@@ -118,9 +116,7 @@ export async function checkAndSuggest(): Promise<void> {
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
       try {
-        console.log(`[ac] querying: "${word}"`);
         const suggestions = await getSuggestions(word);
-        console.log(`[ac] ${suggestions.length} suggestions`);
         if (suggestions.length > 0) {
           const autoExpand = (logseq.settings as Record<string, unknown>)?.autoExpandOnUnique === true;
           if (autoExpand && suggestions.length === 1) {
@@ -134,7 +130,7 @@ export async function checkAndSuggest(): Promise<void> {
               }
             }
           }
-          show(suggestions, cursorPos.rect.left, cursorPos.rect.top + cursorPos.rect.height + 4);
+          show(suggestions, cursorPos.rect.left, cursorPos.rect.top + cursorPos.rect.height + 4, word);
         } else if (isVisible()) {
           hide();
         }
@@ -191,8 +187,6 @@ function main(): void {
   loadSessionWords();
   preloadSessionWords().catch(console.error);
 
-  console.log("[ac] loaded");
-
   let lastCheck = 0;
   const minInterval = Number((logseq.settings as Record<string, unknown>)?.minInterval ?? 80);
   logseq.DB.onChanged(async ({ blocks }) => {
@@ -214,6 +208,9 @@ function main(): void {
   });
   logseq.App.registerCommandShortcut({ binding: "alt+," }, () => {
     if (isVisible()) selectPrev();
+  });
+  logseq.App.registerCommandShortcut({ binding: "tab" }, () => {
+    confirmSuggestion().catch(console.error);
   });
   onTabConfirm(() => {
     confirmSuggestion().catch(console.error);

@@ -4,13 +4,13 @@ Suggests **pages**, **tags**, and **dictionary words** while you type in Logseq.
 
 ## Use Case
 
-A floating dropdown appears with ranked suggestions as you type plain text. Click a suggestion (or press `Alt+J`/`Alt+,` to navigate and `Tab` to confirm) to replace the partial word. When enabled, a single match can be inserted automatically.
+A floating dropdown appears with ranked suggestions as you type plain text. The first suggestion is also shown as gray ghost text directly after the cursor, so you can preview the completion without looking away from your text. Click a suggestion (or press `Alt+J`/`Alt+,` to navigate and `Tab` to confirm) to replace the partial word. When enabled, a single match can be inserted automatically.
 
 ### What changes?
 
 | Scenario | Default Logseq (no plugin) | With this plugin |
 |---|---|---|
-| Typing `hel` in a block | No suggestion — you just see `hel` as plain text | A dropdown appears showing matching page names (e.g., "Hello"), tags, and dictionary words |
+| Typing `hel` in a block | No suggestion — you just see `hel` as plain text | A dropdown appears showing matching page names (e.g., "Hello"), tags, and dictionary words. The first match is previewed as gray ghost text after the cursor. |
 | Typing `[[hel` | Default page-ref autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `[[` autocomplete |
 | Typing `#hel` | Default tag autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `#` autocomplete |
 
@@ -48,6 +48,10 @@ The **Min Interval (ms)** setting (default: 80) sets the minimum time between co
 ### Auto-expand on unique match
 
 When enabled (default: off), the plugin inserts the suggestion automatically when exactly one match is found. The configurable debounce ensures the user has paused typing before the expansion triggers. If the user continues typing during the asynchronous database query, the safety check catches it and shows the dropdown instead.
+
+### Enable Inline Preview
+
+When enabled (default: on), the first suggestion is shown as gray ghost text directly after the cursor. The ghost text updates when you navigate suggestions with `Alt+J`/`Alt+,` and disappears on confirmation or dismissal. This lets you preview the completion inline without shifting focus to the dropdown.
 
 ### Frequency Weights
 

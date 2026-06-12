@@ -60,6 +60,7 @@ describe("keyboard navigation + confirm flow", () => {
       ],
       0,
       0,
+      "",
     );
 
     // Initial: first item selected
@@ -92,6 +93,7 @@ describe("keyboard navigation + confirm flow", () => {
       ],
       0,
       0,
+      "",
     );
 
     expect(getSelected()?.text).toBe("a");
@@ -112,6 +114,7 @@ describe("keyboard navigation + confirm flow", () => {
       ],
       0,
       0,
+      "",
     );
     selectNext();
     expect(getSelected()?.text).toBe("b");
@@ -126,6 +129,7 @@ describe("keyboard navigation + confirm flow", () => {
       ],
       0,
       0,
+      "",
     );
     expect(getSelected()?.text).toBe("x");
   });
@@ -134,13 +138,13 @@ describe("keyboard navigation + confirm flow", () => {
     const { init, show, hide, isVisible } = await import("./ui-host");
     init();
 
-    show([{ text: "a", type: "page", score: 1 }], 0, 0);
+    show([{ text: "a", type: "page", score: 1 }], 0, 0, "");
     expect(isVisible()).toBe(true);
 
     hide();
     expect(isVisible()).toBe(false);
 
-    show([{ text: "b", type: "page", score: 1 }], 0, 0);
+    show([{ text: "b", type: "page", score: 1 }], 0, 0, "");
     expect(isVisible()).toBe(true);
   });
 
@@ -150,7 +154,7 @@ describe("keyboard navigation + confirm flow", () => {
     init();
 
     expect(isVisible()).toBe(false);
-    show([{ text: "a", type: "page", score: 1 }], 0, 0);
+    show([{ text: "a", type: "page", score: 1 }], 0, 0, "");
     expect(isVisible()).toBe(true);
     hide();
     expect(isVisible()).toBe(false);
