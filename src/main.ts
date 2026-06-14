@@ -3,8 +3,17 @@ import type { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin";
 import { isInIgnoredContext } from "./context";
 import { learnFromBlockContent, loadSessionWords, preloadSessionWords } from "./session";
 import { getSuggestions } from "./suggestions";
-import { getSelected, hide, init as initUI, isVisible, selectNext, selectPrev, show } from "./ui-host";
-import { getWordAtCursor } from "./utils";
+import {
+  getCurrentSuggestions,
+  getSelected,
+  hide,
+  init as initUI,
+  isVisible,
+  selectNext,
+  selectPrev,
+  show,
+} from "./ui-host";
+import { getWordAtCursor, longestCommonPrefix } from "./utils";
 import type { Suggestion } from "./utils";
 
 function settingsSchema(): SettingSchemaDesc[] {
@@ -147,9 +156,39 @@ export async function checkAndSuggest(): Promise<void> {
 
 export async function confirmSuggestion(): Promise<void> {
   if (!isVisible()) return;
-  const selected = getSelected();
-  if (!selected) return;
-  await insertSuggestion(selected);
+  const suggestions = getCurrentSuggestions();
+  if (suggestions.length === 0) return;
+
+  if (suggestions.length === 1) {
+    await insertSuggestion(suggestions[0]);
+    return;
+  }
+
+  await insertCommonPrefix(suggestions);
+}
+
+async function insertCommonPrefix(suggestions: Suggestion[]): Promise<void> {
+  try {
+    const block = await logseq.Editor.getCurrentBlock();
+    if (!block) return;
+    const content = block.content ?? "";
+    const cursorPos = await logseq.Editor.getEditingCursorPosition();
+    if (!cursorPos) return;
+    const word = getWordAtCursor(content, cursorPos.pos);
+    if (!word) return;
+
+    const completed = longestCommonPrefix(suggestions, word);
+    if (!completed) return;
+
+    const idx = content.indexOf(word, Math.max(0, cursorPos.pos - word.length));
+    if (idx === -1) return;
+    const newContent = content.slice(0, idx) + completed + content.slice(idx + word.length);
+    await logseq.Editor.updateBlock(block.uuid, newContent);
+  } catch (err) {
+    console.error("autocomplete insert error:", err);
+  }
+  hide();
+  lastPrefix = "";
 }
 
 async function insertSuggestion(suggestion: Suggestion): Promise<void> {

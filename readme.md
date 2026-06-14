@@ -4,7 +4,7 @@ Suggests **pages**, **tags**, and **dictionary words** while you type in Logseq.
 
 ## Use Case
 
-When you type plain text, a compact dropdown appears showing completion suffixes (the remaining part of the word). Each entry is shown as gray ghost text — just the suffix after what you've already typed. Pages and tags are labeled with a small `(p)` or `(t)`; dictionary words have no label. The dropdown shows up to 4 items and is positioned below the current block. Click a suggestion (or press `Alt+J`/`Alt+,` to navigate and `Ctrl+Space` to confirm) to replace the partial word. When enabled, a single match can be inserted automatically.
+When you type plain text, a compact dropdown appears showing completion suffixes (the remaining part of the word). Each entry is shown as gray ghost text — just the suffix after what you've already typed. Pages and tags are labeled with a small `(p)` or `(t)`; dictionary words have no label. The dropdown shows up to 4 items and is positioned below the current block. Press `Ctrl+Space` to complete up to the longest common prefix of all suggestions (plain text, no `[[`/`#` wrapping). When only one suggestion exists, it is inserted fully with proper wrapping. Use `Alt+J`/`Alt+,` to navigate the list, then `Ctrl+Space` to confirm the selection. When enabled, a single match can be inserted automatically.
 
 ### What changes?
 
@@ -28,7 +28,7 @@ When a name matches both a page and a tag, only the tag entry is shown (tags tak
 |----------|--------|
 | `Alt+J` | Next suggestion |
 | `Alt+,` | Previous suggestion |
-| `Ctrl+Space` | Confirm selected suggestion |
+| `Ctrl+Space` | Complete to common prefix (multiple suggestions) or confirm full suggestion (single match) |
 | `Escape` | Dismiss suggestion dropdown |
 
 ## Configuration
@@ -71,6 +71,17 @@ When **Enable context-aware filtering** is on (default), the plugin suppresses s
 - Inside URLs — URL text should not trigger suggestions
 
 Disable the setting to show suggestions everywhere, including these contexts.
+
+### Partial Completion (Common Prefix)
+
+`Ctrl+Space` inserts only the longest text that all suggestions share — the common prefix — rather than a full suggestion. This lets you iteratively narrow down:
+
+1. Type `blau` → suggestions appear: `blaupause`, `blauwal`, `blau`
+2. Press `Ctrl+Space` → inserts `blau` (the common prefix; no change since it matches what you typed)
+3. Type `w` → now only `blauwal` matches
+4. Press `Ctrl+Space` → inserts `[[blauwal]]` (single suggestion → full completion with wrapping)
+
+The inserted prefix is always plain text (no `[[`/`#` wrapping). Press `Ctrl+Space` again later after typing more characters to further narrow the suggestions. When only one suggestion remains, it is inserted with the correct page/tag formatting.
 
 ### Session Learning
 
