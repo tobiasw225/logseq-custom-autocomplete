@@ -1,3 +1,10 @@
+# [0.8.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.7.2...v0.8.0) (2026-06-14)
+
+
+### Features
+
+* remove tag & page completion ([#37](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/37)) ([50025da](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/50025da66ab3eae4f93eea7d1032c80e97a11d60))
+
 ## [0.7.2](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.7.1...v0.7.2) (2026-06-14)
 
 
