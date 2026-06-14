@@ -17,6 +17,7 @@ vi.mock("./session", () => ({
 const mockShow = vi.fn();
 const mockHide = vi.fn();
 const mockIsVisible = vi.fn();
+const mockGetCurrentSuggestions = vi.fn();
 vi.mock("./ui-host", () => ({
   init: vi.fn(),
   show: mockShow,
@@ -25,6 +26,7 @@ vi.mock("./ui-host", () => ({
   selectNext: vi.fn(),
   selectPrev: vi.fn(),
   getSelected: vi.fn(),
+  getCurrentSuggestions: mockGetCurrentSuggestions,
 }));
 
 function createMockLogseq() {
@@ -185,15 +187,10 @@ describe("confirmSuggestion", () => {
       rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 },
     });
 
-    const { confirmSuggestion } = await import("./main");
-    const { getSelected } = await import("./ui-host");
-    vi.mocked(getSelected).mockReturnValue({
-      text: "blaupause",
-      type: "page",
-      score: 100,
-    });
+    mockGetCurrentSuggestions.mockReturnValue([{ text: "blaupause", type: "page", score: 100 }]);
     mockIsVisible.mockReturnValue(true);
 
+    const { confirmSuggestion } = await import("./main");
     await confirmSuggestion();
 
     expect(logseq.Editor.updateBlock).toHaveBeenCalledWith("test-uuid", "[[Blaupause]]");
@@ -210,15 +207,10 @@ describe("confirmSuggestion", () => {
       rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 },
     });
 
-    const { confirmSuggestion } = await import("./main");
-    const { getSelected } = await import("./ui-host");
-    vi.mocked(getSelected).mockReturnValue({
-      text: "blaupause",
-      type: "dictionary",
-      score: 100,
-    });
+    mockGetCurrentSuggestions.mockReturnValue([{ text: "blaupause", type: "dictionary", score: 100 }]);
     mockIsVisible.mockReturnValue(true);
 
+    const { confirmSuggestion } = await import("./main");
     await confirmSuggestion();
 
     expect(logseq.Editor.updateBlock).toHaveBeenCalledWith("test-uuid", "Blaupause");
