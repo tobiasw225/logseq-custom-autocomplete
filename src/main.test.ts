@@ -80,13 +80,13 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
     const logseq = (globalThis as any).logseq;
     logseq.settings = { autoExpandOnUnique: true };
     setupEditor("Blau", 4);
-    mockGetSuggestions.mockResolvedValue([{ text: "blaupause", type: "page", score: 100 }]);
+    mockGetSuggestions.mockReturnValue([{ text: "blaupause", type: "dictionary", score: 100 }]);
 
     const { checkAndSuggest } = await import("./main");
     checkAndSuggest().catch(console.error);
     await vi.advanceTimersByTimeAsync(80);
 
-    expect(logseq.Editor.updateBlock).toHaveBeenCalledWith("test-uuid", "[[Blaupause]]");
+    expect(logseq.Editor.updateBlock).toHaveBeenCalledWith("test-uuid", "Blaupause");
     expect(mockShow).not.toHaveBeenCalled();
     vi.useRealTimers();
   });
@@ -96,7 +96,7 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
     const logseq = (globalThis as any).logseq;
     logseq.settings = { autoExpandOnUnique: false };
     setupEditor("bu", 2);
-    mockGetSuggestions.mockResolvedValue([{ text: "buch", type: "page", score: 100 }]);
+    mockGetSuggestions.mockReturnValue([{ text: "buch", type: "dictionary", score: 100 }]);
 
     const { checkAndSuggest } = await import("./main");
     checkAndSuggest().catch(console.error);
@@ -112,9 +112,9 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
     const logseq = (globalThis as any).logseq;
     logseq.settings = { autoExpandOnUnique: true };
     setupEditor("bu", 2);
-    mockGetSuggestions.mockResolvedValue([
-      { text: "buch", type: "page", score: 100 },
-      { text: "budget", type: "page", score: 80 },
+    mockGetSuggestions.mockReturnValue([
+      { text: "buch", type: "dictionary", score: 100 },
+      { text: "budget", type: "dictionary", score: 80 },
     ]);
 
     const { checkAndSuggest } = await import("./main");
@@ -136,7 +136,7 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
     logseq.Editor.getEditingCursorPosition
       .mockResolvedValueOnce({ pos: 3, rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 } })
       .mockResolvedValueOnce({ pos: 4, rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 } });
-    mockGetSuggestions.mockResolvedValue([{ text: "buch", type: "page", score: 100 }]);
+    mockGetSuggestions.mockReturnValue([{ text: "buch", type: "dictionary", score: 100 }]);
 
     const { checkAndSuggest } = await import("./main");
     checkAndSuggest().catch(console.error);
@@ -153,7 +153,7 @@ describe("checkAndSuggest — auto-expand on unique match", () => {
     vi.useFakeTimers();
     mockIsVisible.mockReturnValue(true);
     setupEditor("xy", 2);
-    mockGetSuggestions.mockResolvedValue([]);
+    mockGetSuggestions.mockReturnValue([]);
 
     const { checkAndSuggest } = await import("./main");
     checkAndSuggest().catch(console.error);
@@ -176,7 +176,7 @@ describe("confirmSuggestion", () => {
     expect(logseq.Editor.updateBlock).not.toHaveBeenCalled();
   });
 
-  it("preserves user casing when confirming a page suggestion", async () => {
+  it("preserves user casing when confirming a dictionary suggestion", async () => {
     const logseq = (globalThis as any).logseq;
     logseq.Editor.getCurrentBlock.mockResolvedValue({
       uuid: "test-uuid",
@@ -187,16 +187,16 @@ describe("confirmSuggestion", () => {
       rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 },
     });
 
-    mockGetCurrentSuggestions.mockReturnValue([{ text: "blaupause", type: "page", score: 100 }]);
+    mockGetCurrentSuggestions.mockReturnValue([{ text: "blaupause", type: "dictionary", score: 100 }]);
     mockIsVisible.mockReturnValue(true);
 
     const { confirmSuggestion } = await import("./main");
     await confirmSuggestion();
 
-    expect(logseq.Editor.updateBlock).toHaveBeenCalledWith("test-uuid", "[[Blaupause]]");
+    expect(logseq.Editor.updateBlock).toHaveBeenCalledWith("test-uuid", "Blaupause");
   });
 
-  it("preserves user casing when confirming a dictionary suggestion", async () => {
+  it("preserves user casing when confirming a dictionary suggestion (second test)", async () => {
     const logseq = (globalThis as any).logseq;
     logseq.Editor.getCurrentBlock.mockResolvedValue({
       uuid: "test-uuid",

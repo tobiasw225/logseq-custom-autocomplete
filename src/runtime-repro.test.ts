@@ -54,8 +54,8 @@ describe("keyboard navigation + confirm flow", () => {
 
     show(
       [
-        { text: "alpha", type: "page", score: 1 },
-        { text: "beta", type: "tag", score: 1 },
+        { text: "alpha", type: "dictionary", score: 1 },
+        { text: "beta", type: "dictionary", score: 1 },
         { text: "gamma", type: "dictionary", score: 1 },
       ],
       0,
@@ -87,8 +87,8 @@ describe("keyboard navigation + confirm flow", () => {
 
     show(
       [
-        { text: "a", type: "page", score: 1 },
-        { text: "b", type: "tag", score: 1 },
+        { text: "a", type: "dictionary", score: 1 },
+        { text: "b", type: "dictionary", score: 1 },
         { text: "c", type: "dictionary", score: 1 },
       ],
       0,
@@ -109,8 +109,8 @@ describe("keyboard navigation + confirm flow", () => {
 
     show(
       [
-        { text: "a", type: "page", score: 1 },
-        { text: "b", type: "page", score: 1 },
+        { text: "a", type: "dictionary", score: 1 },
+        { text: "b", type: "dictionary", score: 1 },
       ],
       0,
       0,
@@ -124,8 +124,8 @@ describe("keyboard navigation + confirm flow", () => {
 
     show(
       [
-        { text: "x", type: "page", score: 1 },
-        { text: "y", type: "page", score: 1 },
+        { text: "x", type: "dictionary", score: 1 },
+        { text: "y", type: "dictionary", score: 1 },
       ],
       0,
       0,
@@ -138,13 +138,13 @@ describe("keyboard navigation + confirm flow", () => {
     const { init, show, hide, isVisible } = await import("./ui-host");
     init();
 
-    show([{ text: "a", type: "page", score: 1 }], 0, 0, "");
+    show([{ text: "a", type: "dictionary", score: 1 }], 0, 0, "");
     expect(isVisible()).toBe(true);
 
     hide();
     expect(isVisible()).toBe(false);
 
-    show([{ text: "b", type: "page", score: 1 }], 0, 0, "");
+    show([{ text: "b", type: "dictionary", score: 1 }], 0, 0, "");
     expect(isVisible()).toBe(true);
   });
 
@@ -154,7 +154,7 @@ describe("keyboard navigation + confirm flow", () => {
     init();
 
     expect(isVisible()).toBe(false);
-    show([{ text: "a", type: "page", score: 1 }], 0, 0, "");
+    show([{ text: "a", type: "dictionary", score: 1 }], 0, 0, "");
     expect(isVisible()).toBe(true);
     hide();
     expect(isVisible()).toBe(false);

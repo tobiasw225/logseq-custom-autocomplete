@@ -95,9 +95,8 @@ function render(): void {
     .map((s, i) => {
       const lowerSugg = s.text.toLowerCase();
       const suffix = lowerSugg.startsWith(lowerPrefix) ? s.text.slice(lowerPrefix.length) : s.text;
-      const typeLabel = s.type === "page" ? " (p)" : s.type === "tag" ? " (t)" : "";
       const cls = i === selectedIndex ? "ac-item selected" : "ac-item";
-      return `<div data-index="${i}" class="${cls}">${suffix}<span class="ac-type">${typeLabel}</span></div>`;
+      return `<div data-index="${i}" class="${cls}">${suffix}</div>`;
     })
     .join("");
 

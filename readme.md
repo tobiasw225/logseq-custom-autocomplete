@@ -1,26 +1,20 @@
 # Logseq Autocomplete
 
-Suggests **pages**, **tags**, and **dictionary words** while you type in Logseq.
+Suggests **dictionary words** while you type in Logseq.
 
 ## Use Case
 
-When you type plain text, a compact dropdown appears showing completion suffixes (the remaining part of the word). Each entry is shown as gray ghost text — just the suffix after what you've already typed. Pages and tags are labeled with a small `(p)` or `(t)`; dictionary words have no label. The dropdown shows up to 4 items and is positioned below the current block. Press `Ctrl+Space` to complete up to the longest common prefix of all suggestions (plain text, no `[[`/`#` wrapping). When only one suggestion exists, it is inserted fully with proper wrapping. Use `Alt+J`/`Alt+,` to navigate the list, then `Ctrl+Space` to confirm the selection. When enabled, a single match can be inserted automatically.
+When you type plain text, a compact dropdown appears showing completion suffixes (the remaining part of the word). Each entry is shown as gray ghost text — just the suffix after what you've already typed. The dropdown shows up to 4 items and is positioned below the block. Press `Ctrl+Space` to complete up to the longest common prefix of all suggestions. When only one suggestion exists, it is inserted fully. Use `Alt+J`/`Alt+,` to navigate the list, then `Ctrl+Space` to confirm the selection. When enabled, a single match can be inserted automatically.
 
 ### What changes?
 
 | Scenario | Default Logseq (no plugin) | With this plugin |
 |---|---|---|
-| Typing `hel` in a block | No suggestion — you just see `hel` as plain text | A compact dropdown appears below the block showing completion suffixes (e.g., `lo (p)`, `p (t)`). The first entry is pre-selected. |
-| Typing `[[hel` | Default page-ref autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `[[` autocomplete |
-| Typing `#hel` | Default tag autocomplete kicks in (unchanged) | Plugin defers to Logseq's built-in `#` autocomplete |
+| Typing `hel` in a block | No suggestion — you just see `hel` as plain text | A compact dropdown appears below the block showing completion suffixes (e.g., `lo`). The first entry is pre-selected. |
 
-The plugin queries three sources when you type a word (≥1 character):
+The plugin queries one source when you type a word (≥1 character):
 
-- **Pages** — page titles from your graph that match the prefix
-- **Tags** — tags used in your graph that match the prefix (detected via both `#tag` inline references and `tags::` properties)
 - **Session** — words you have typed in this and earlier sessions, automatically learned and ranked by frequency. On first run, existing words from your blocks are pre-loaded so suggestions are available immediately.
-
-When a name matches both a page and a tag, only the tag entry is shown (tags take priority over pages in the suggestion list).
 
 ## Keyboard Shortcuts
 
@@ -47,30 +41,15 @@ The **Min Interval (ms)** setting (default: 80) sets the minimum time between co
 
 ### Auto-expand on unique match
 
-When enabled (default: off), the plugin inserts the suggestion automatically when exactly one match is found. The configurable debounce ensures the user has paused typing before the expansion triggers. If the user continues typing during the asynchronous database query, the safety check catches it and shows the dropdown instead.
+When enabled (default: off), the plugin inserts the suggestion automatically when exactly one match is found. The configurable debounce ensures the user has paused typing before the expansion triggers. If the user continues typing during the query, the safety check catches it and shows the dropdown instead.
 
-### Frequency Weights
+### Frequency Weight
 
-Three per-type sliders (0–1) control how much usage frequency influences the ranking:
-
-| Setting | Default | Effect |
-|---------|---------|--------|
-| **Page Freq. Weight** | 0.3 | How much page frequency matters vs. match quality |
-| **Tag Freq. Weight** | 0.3 | How much tag frequency matters vs. match quality |
-| **Dict Freq. Weight** | 0.3 | How much dictionary-word frequency matters vs. match quality |
-
-A weight of `0` ignores frequency entirely (pure match score), while `1` sorts purely by how often you've typed the word. The default `0.3` gives a gentle boost to frequently used words without overpowering the prefix match.
+A slider (0–1) controls how much usage frequency influences the ranking. A weight of `0` ignores frequency entirely (pure match score), while `1` sorts purely by how often you've typed the word. The default `0.3` gives a gentle boost to frequently used words without overpowering the prefix match.
 
 ### Context-Aware Filtering
 
-When **Enable context-aware filtering** is on (default), the plugin suppresses suggestions in contexts where Logseq's own autocomplete or no completion is expected:
-
-- Inside `[[wikilinks]]` — Logseq's built-in page-ref autocomplete takes over
-- Inside `#tags` — Logseq's built-in tag autocomplete takes over
-- Inside code blocks (`` ``` ``) — code should not trigger suggestions
-- Inside URLs — URL text should not trigger suggestions
-
-Disable the setting to show suggestions everywhere, including these contexts.
+When **Enable context-aware filtering** is on (default), the plugin suppresses suggestions inside code blocks and URLs — contexts where completion is not expected.
 
 ### Partial Completion (Common Prefix)
 
@@ -79,10 +58,10 @@ Disable the setting to show suggestions everywhere, including these contexts.
 1. Type `blau` → suggestions appear: `blaupause`, `blauwal`, `blau`
 2. Press `Ctrl+Space` → inserts `blau` (the common prefix; no change since it matches what you typed)
 3. Type `w` → now only `blauwal` matches
-4. Press `Ctrl+Space` → inserts `[[blauwal]]` (single suggestion → full completion with wrapping)
+4. Press `Ctrl+Space` → inserts `blauwal` (single suggestion → full completion)
 
-The inserted prefix is always plain text (no `[[`/`#` wrapping). Press `Ctrl+Space` again later after typing more characters to further narrow the suggestions. When only one suggestion remains, it is inserted with the correct page/tag formatting.
+When only one suggestion remains, it is inserted in full.
 
 ### Session Learning
 
-The plugin automatically learns words while you type and remembers them across sessions (persisted in plugin settings). On first run, existing words from your graph are pre-loaded into the session dictionary, so suggestions appear right away. Session frequency boosts the ranking of pages, tags, and dictionary words via the per-type frequency weights above. No configuration needed — it works out of the box.
+The plugin automatically learns words while you type and remembers them across sessions (persisted in plugin settings). On first run, existing words from your graph are pre-loaded into the session dictionary, so suggestions appear right away. No configuration needed — it works out of the box.

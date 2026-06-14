@@ -2,7 +2,7 @@
 
 ## Project Context
 
-[Logseq Autocomplete](https://github.com/anomalyco/logseq-autocomplete) is a Logseq plugin that suggests pages, tags, and dictionary words while typing. Built with TypeScript, Vite, Vitest, and Biome. Managed via npm. The CI pipeline runs lint, typecheck, test, build, and release via GitHub Actions.
+[Logseq Autocomplete](https://github.com/anomalyco/logseq-autocomplete) is a Logseq plugin that suggests dictionary words while typing (page and tag completion were removed in v0.8.0). Built with TypeScript, Vite, Vitest, and Biome. Managed via npm. The CI pipeline runs lint, typecheck, test, build, and release via GitHub Actions.
 
 ## Workflow Rules
 
