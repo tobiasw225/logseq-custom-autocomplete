@@ -1,3 +1,10 @@
+## [0.7.2](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.7.1...v0.7.2) (2026-06-14)
+
+
+### Bug Fixes
+
+* dropdown get's lost in it's focus and shift back to ctrl+space for completition ([#35](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/35)) ([885e220](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/885e2200eaf885537286d395816fd156dedd584d))
+
 ## [0.7.1](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.7.0...v0.7.1) (2026-06-12)
 
 
