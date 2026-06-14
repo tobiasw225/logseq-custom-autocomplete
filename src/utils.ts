@@ -1,6 +1,6 @@
 export interface Suggestion {
   text: string;
-  type: "page" | "tag" | "dictionary";
+  type: "dictionary";
   score: number;
   frequency?: number;
 }

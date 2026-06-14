@@ -1,65 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isInIgnoredContext, isInsideCodeBlock, isInsideTag, isInsideUrl, isInsideWikilink } from "./context";
-
-describe("isInsideWikilink", () => {
-  it("returns true when cursor is inside a wikilink", () => {
-    expect(isInsideWikilink("[[hello]]", 3)).toBe(true);
-  });
-
-  it("returns true for unclosed wikilink", () => {
-    expect(isInsideWikilink("[[hello", 5)).toBe(true);
-  });
-
-  it("returns false when cursor is outside wikilink", () => {
-    expect(isInsideWikilink("text [[link]] more", 2)).toBe(false);
-  });
-
-  it("returns false when cursor is after a closed wikilink", () => {
-    expect(isInsideWikilink("[[link]] text", 10)).toBe(false);
-  });
-
-  it("returns false for plain text", () => {
-    expect(isInsideWikilink("hello world", 4)).toBe(false);
-  });
-
-  it("handles multiple wikilinks", () => {
-    expect(isInsideWikilink("[[a]] [[b]]", 10)).toBe(true);
-  });
-
-  it("returns false for empty content", () => {
-    expect(isInsideWikilink("", 0)).toBe(false);
-  });
-});
-
-describe("isInsideTag", () => {
-  it("returns true when cursor is in a #tag", () => {
-    expect(isInsideTag("#tag", 2)).toBe(true);
-  });
-
-  it("returns true when cursor is at start of tag word", () => {
-    expect(isInsideTag("#tag", 1)).toBe(true);
-  });
-
-  it("returns true for tag in the middle of text", () => {
-    expect(isInsideTag("text #tag more", 8)).toBe(true);
-  });
-
-  it("returns false for escaped hash ##tag", () => {
-    expect(isInsideTag("##tag", 3)).toBe(false);
-  });
-
-  it("returns false for plain text without #", () => {
-    expect(isInsideTag("hello", 2)).toBe(false);
-  });
-
-  it("returns false when # is attached to text (not a valid tag)", () => {
-    expect(isInsideTag("text#tag", 7)).toBe(false);
-  });
-
-  it("returns false for empty content", () => {
-    expect(isInsideTag("", 0)).toBe(false);
-  });
-});
+import { isInIgnoredContext, isInsideCodeBlock, isInsideUrl } from "./context";
 
 describe("isInsideCodeBlock", () => {
   it("returns true when cursor is inside a code block", () => {
@@ -118,14 +58,6 @@ describe("isInsideUrl", () => {
 });
 
 describe("isInIgnoredContext", () => {
-  it("returns true inside wikilink", () => {
-    expect(isInIgnoredContext("[[hello]]", 3)).toBe(true);
-  });
-
-  it("returns true inside tag", () => {
-    expect(isInIgnoredContext("#tag", 2)).toBe(true);
-  });
-
   it("returns true inside code block", () => {
     expect(isInIgnoredContext("```\ncode\n```", 8)).toBe(true);
   });
@@ -136,6 +68,14 @@ describe("isInIgnoredContext", () => {
 
   it("returns false for normal text", () => {
     expect(isInIgnoredContext("hello world", 4)).toBe(false);
+  });
+
+  it("returns false for wikilink (no longer ignored)", () => {
+    expect(isInIgnoredContext("[[hello]]", 3)).toBe(false);
+  });
+
+  it("returns false for tag (no longer ignored)", () => {
+    expect(isInIgnoredContext("#tag", 2)).toBe(false);
   });
 
   it("returns false for empty content", () => {

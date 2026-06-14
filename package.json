@@ -1,7 +1,7 @@
 {
   "name": "logseq-autocomplete",
   "version": "0.7.2",
-  "description": "Autocomplete suggestions while typing in Logseq — powered by pages, tags, and a custom dictionary",
+  "description": "Autocomplete suggestions while typing in Logseq — powered by a custom dictionary that learns your words",
   "main": "dist/index.html",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "id": "logseq-autocomplete",
     "title": "Autocomplete",
     "icon": "./icon.png",
-    "description": "Suggests pages, tags, and dictionary words while you type",
+    "description": "Suggests dictionary words while you type",
     "settings": [
       {
         "key": "autoExpandOnUnique",
@@ -60,32 +60,18 @@
         "description": "Minimum time between repeated suggestion queries (0–500)."
       },
       {
-        "key": "frequencyWeightPage",
-        "type": "number",
-        "default": 0.3,
-        "title": "Page Freq. Weight",
-        "description": "How much page usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only."
-      },
-      {
-        "key": "frequencyWeightTag",
-        "type": "number",
-        "default": 0.3,
-        "title": "Tag Freq. Weight",
-        "description": "How much tag usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only."
-      },
-      {
         "key": "frequencyWeightDict",
         "type": "number",
         "default": 0.3,
-        "title": "Dict Freq. Weight",
-        "description": "How much dictionary-word usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only."
+        "title": "Frequency Weight",
+        "description": "How much word usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only."
       },
       {
         "key": "enableContextFilter",
         "type": "boolean",
         "default": true,
         "title": "Enable context-aware filtering",
-        "description": "When enabled, suggestions are suppressed inside [[wikilinks]], #tags, code blocks, and URLs."
+        "description": "When enabled, suggestions are suppressed inside code blocks and URLs."
       }
     ]
   },

@@ -42,28 +42,11 @@ function settingsSchema(): SettingSchemaDesc[] {
       inputAs: "range",
     },
     {
-      key: "frequencyWeightPage",
-      type: "number",
-      default: 0.3,
-      title: "Page Freq. Weight",
-      description: "How much page usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
-      inputAs: "range",
-    },
-    {
-      key: "frequencyWeightTag",
-      type: "number",
-      default: 0.3,
-      title: "Tag Freq. Weight",
-      description: "How much tag usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
-      inputAs: "range",
-    },
-    {
       key: "frequencyWeightDict",
       type: "number",
       default: 0.3,
-      title: "Dict Freq. Weight",
-      description:
-        "How much dictionary-word usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
+      title: "Frequency Weight",
+      description: "How much word usage frequency matters in ranking (0–1). 0 = match score only, 1 = frequency only.",
       inputAs: "range",
     },
     {
@@ -71,7 +54,7 @@ function settingsSchema(): SettingSchemaDesc[] {
       type: "boolean",
       default: true,
       title: "Enable context-aware filtering",
-      description: "When enabled, suggestions are suppressed inside [[wikilinks]], #tags, code blocks, and URLs.",
+      description: "When enabled, suggestions are suppressed inside code blocks and URLs.",
     },
   ];
 }
@@ -125,7 +108,7 @@ export async function checkAndSuggest(): Promise<void> {
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
       try {
-        const suggestions = await getSuggestions(word);
+        const suggestions = getSuggestions(word);
         if (suggestions.length > 0) {
           const autoExpand = (logseq.settings as Record<string, unknown>)?.autoExpandOnUnique === true;
           if (autoExpand && suggestions.length === 1) {
@@ -209,8 +192,7 @@ async function insertSuggestion(suggestion: Suggestion): Promise<void> {
 
     const idx = content.indexOf(word, Math.max(0, cursorPos.pos - word.length));
     if (idx === -1) return;
-    const replacement =
-      suggestion.type === "page" ? `[[${completed}]]` : suggestion.type === "tag" ? `#${completed}` : completed;
+    const replacement = completed;
     const newContent = content.slice(0, idx) + replacement + content.slice(idx + word.length);
     await logseq.Editor.updateBlock(block.uuid, newContent);
   } catch (err) {

@@ -1,30 +1,3 @@
-export function isInsideWikilink(content: string, pos: number): boolean {
-  let lastOpen = -1;
-  let lastClose = -1;
-  for (let i = pos - 1; i >= 0; i--) {
-    if (i > 0 && content[i] === "[" && content[i - 1] === "[") {
-      lastOpen = i - 1;
-      break;
-    }
-    if (i > 0 && content[i] === "]" && content[i - 1] === "]") {
-      lastClose = i - 1;
-      break;
-    }
-  }
-  if (lastOpen === -1) return false;
-  return lastOpen > lastClose;
-}
-
-export function isInsideTag(content: string, pos: number): boolean {
-  const wordChars = /[a-zA-Z0-9_\-\p{L}]/u;
-  let i = pos - 1;
-  while (i >= 0 && wordChars.test(content[i])) i--;
-  if (i >= 0 && content[i] === "#") {
-    if (i === 0 || /\s/.test(content[i - 1])) return true;
-  }
-  return false;
-}
-
 export function isInsideCodeBlock(content: string, pos: number): boolean {
   const beforeCursor = content.slice(0, pos);
   const lines = beforeCursor.split("\n");
@@ -54,10 +27,5 @@ export function isInsideUrl(content: string, pos: number): boolean {
 }
 
 export function isInIgnoredContext(content: string, pos: number): boolean {
-  return (
-    isInsideWikilink(content, pos) ||
-    isInsideTag(content, pos) ||
-    isInsideCodeBlock(content, pos) ||
-    isInsideUrl(content, pos)
-  );
+  return isInsideCodeBlock(content, pos) || isInsideUrl(content, pos);
 }

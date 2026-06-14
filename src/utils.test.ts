@@ -113,10 +113,10 @@ describe("longestCommonPrefix", () => {
     expect(longestCommonPrefix([s("Hello")], "hel")).toBe("hello");
   });
 
-  it("computes common prefix across suggestions of different types", () => {
+  it("computes common prefix across multiple suggestions", () => {
     const suggestions: Suggestion[] = [
-      { text: "blauwal", type: "page", score: 0 },
-      { text: "blaupause", type: "tag", score: 0 },
+      { text: "blauwal", type: "dictionary", score: 0 },
+      { text: "blaupause", type: "dictionary", score: 0 },
     ];
     expect(longestCommonPrefix(suggestions, "bl")).toBe("blau");
   });

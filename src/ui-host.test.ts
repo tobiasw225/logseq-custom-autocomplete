@@ -42,8 +42,8 @@ describe("show", () => {
     const { init, show } = await import("./ui-host");
     init();
     const suggestions = [
-      { text: "Buchliste 2024", type: "page" as const, score: 10 },
-      { text: "buch", type: "tag" as const, score: 5 },
+      { text: "Buchliste 2024", type: "dictionary" as const, score: 10 },
+      { text: "buch", type: "dictionary" as const, score: 5 },
     ];
     show(suggestions, 100, 200, "");
 
@@ -51,9 +51,7 @@ describe("show", () => {
     const call = provideUI.mock.calls[0][0];
     expect(call.key).toBe("ac-dropdown");
     expect(call.template).toContain("Buchliste 2024");
-    expect(call.template).toContain("(p)");
     expect(call.template).toContain("buch");
-    expect(call.template).toContain("(t)");
     expect(call.style).toMatchObject({
       position: "fixed",
       left: "100px",
@@ -67,7 +65,7 @@ describe("show", () => {
   it("marks first item as selected", async () => {
     const { init, show } = await import("./ui-host");
     init();
-    show([{ text: "a", type: "page", score: 1 }], 0, 0, "");
+    show([{ text: "a", type: "dictionary", score: 1 }], 0, 0, "");
     const template = provideUI.mock.calls[0][0].template;
     expect(template).toContain('class="ac-item selected"');
   });
@@ -90,7 +88,7 @@ describe("show", () => {
 
     const { init, show } = await import("./ui-host");
     init();
-    show([{ text: "test", type: "page", score: 1 }], 100, 200, "");
+    show([{ text: "test", type: "dictionary", score: 1 }], 100, 200, "");
 
     expect(dragHandle.style.display).toBe("none");
     expect(resizeHandle.style.display).toBe("none");
@@ -100,13 +98,12 @@ describe("show", () => {
     expect(container.getAttribute("resizable")).toBeNull();
   });
 
-  it("renders suffix with type labels", async () => {
+  it("renders suffix without type labels", async () => {
     const { init, show } = await import("./ui-host");
     init();
     show(
       [
-        { text: "hello", type: "page", score: 1 },
-        { text: "#tag", type: "tag", score: 1 },
+        { text: "hello", type: "dictionary", score: 1 },
         { text: "word", type: "dictionary", score: 1 },
       ],
       0,
@@ -115,9 +112,6 @@ describe("show", () => {
     );
     const template = provideUI.mock.calls[0][0].template;
     expect(template).toContain("lo");
-    expect(template).toContain("(p)");
-    expect(template).toContain("g");
-    expect(template).toContain("(t)");
     expect(template).toContain("rd");
   });
 });
@@ -126,7 +120,7 @@ describe("hide", () => {
   it("calls provideUI with null template", async () => {
     const { init, hide, show } = await import("./ui-host");
     init();
-    show([{ text: "a", type: "page", score: 1 }], 0, 0, "");
+    show([{ text: "a", type: "dictionary", score: 1 }], 0, 0, "");
     provideUI.mockClear();
 
     hide();
@@ -145,8 +139,8 @@ describe("keyboard navigation", () => {
     init();
     show(
       [
-        { text: "a", type: "page", score: 1 },
-        { text: "b", type: "page", score: 1 },
+        { text: "a", type: "dictionary", score: 1 },
+        { text: "b", type: "dictionary", score: 1 },
       ],
       0,
       0,
@@ -167,8 +161,8 @@ describe("keyboard navigation", () => {
     init();
     show(
       [
-        { text: "a", type: "page", score: 1 },
-        { text: "b", type: "page", score: 1 },
+        { text: "a", type: "dictionary", score: 1 },
+        { text: "b", type: "dictionary", score: 1 },
       ],
       0,
       0,
@@ -194,7 +188,7 @@ describe("Escape dismissal", () => {
   it("hides the dropdown on Escape keydown", async () => {
     const { init, show, isVisible } = await import("./ui-host");
     init();
-    show([{ text: "test", type: "page", score: 1 }], 100, 200, "");
+    show([{ text: "test", type: "dictionary", score: 1 }], 100, 200, "");
     expect(isVisible()).toBe(true);
 
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
@@ -218,8 +212,8 @@ describe("getSelected", () => {
     init();
     show(
       [
-        { text: "a", type: "page", score: 1 },
-        { text: "b", type: "page", score: 1 },
+        { text: "a", type: "dictionary", score: 1 },
+        { text: "b", type: "dictionary", score: 1 },
       ],
       0,
       0,
@@ -243,8 +237,8 @@ describe("getCurrentSuggestions", () => {
     const { init, show, getCurrentSuggestions } = await import("./ui-host");
     init();
     const suggestions = [
-      { text: "a", type: "page" as const, score: 1 },
-      { text: "b", type: "tag" as const, score: 1 },
+      { text: "a", type: "dictionary" as const, score: 1 },
+      { text: "b", type: "dictionary" as const, score: 1 },
     ];
     show(suggestions, 0, 0, "");
     expect(getCurrentSuggestions()).toEqual(suggestions);
@@ -261,7 +255,7 @@ describe("getSelectedIndex", () => {
   it("returns 0 initially after show", async () => {
     const { init, show, getSelectedIndex } = await import("./ui-host");
     init();
-    show([{ text: "a", type: "page", score: 1 }], 0, 0, "");
+    show([{ text: "a", type: "dictionary", score: 1 }], 0, 0, "");
     expect(getSelectedIndex()).toBe(0);
   });
 
@@ -270,9 +264,9 @@ describe("getSelectedIndex", () => {
     init();
     show(
       [
-        { text: "a", type: "page", score: 1 },
-        { text: "b", type: "page", score: 1 },
-        { text: "c", type: "page", score: 1 },
+        { text: "a", type: "dictionary", score: 1 },
+        { text: "b", type: "dictionary", score: 1 },
+        { text: "c", type: "dictionary", score: 1 },
       ],
       0,
       0,
