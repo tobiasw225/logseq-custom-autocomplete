@@ -28,18 +28,14 @@ npm run dev
 ## How It Works
 
 1. A debounced callback (configurable via `suggestionDebounceDelay`, default 80ms) fires after the last keystroke to query suggestions
-2. Before extracting the word, the plugin checks whether the cursor is in an ignored context ([[wikilink]], #tag, code block, URL) via `src/context.ts`. If so, suggestions are suppressed
+2. Before extracting the word, the plugin checks whether the cursor is in an ignored context (code block or URL) via `src/context.ts`. If so, suggestions are suppressed
 3. When content changes, it extracts the word being typed (everything from the last word boundary to the cursor)
-3. The block content is automatically learned and added to a **session dictionary** with frequency tracking, persisted across restarts
-4. Four sources are queried in parallel:
-   - **Datalog query** for pages matching the prefix (`:block/name`)
-   - **Datalog query** for tags (`:block/tags` and `:block/refs`) — catches both inline `#tag` references and `tags::` properties
-   - **Session dictionary** — words learned from your typing, ranked by frequency
-5. Results are merged: if a name matches both a page and a tag, the page entry is dropped (tags take priority over pages)
-6. Results are ranked by a blended score: `matchScore * (1 - weight) + frequencyScore * weight`, where `weight` is configurable per type (page/tag/dictionary). Frequency is normalized across the result set (highest frequency = 100). Ties fall back to type order (dictionary → tag → page) for deterministic sorting
-7. A floating dropdown is rendered via `logseq.provideUI` (key `ac-dropdown`). The dropdown shows completion suffixes (text after the typed prefix) in ghost-like opacity. Pages show ` (p)` and tags ` (t)` as type labels. Dictionary words have no label. The list is capped at 4 items; if more exist, a `…` indicator is shown
+4. The block content is automatically learned and added to a **session dictionary** with frequency tracking, persisted across restarts
+5. The session dictionary is queried synchronously for prefix matches, sorted by frequency descending
+6. Results are ranked by a blended score: `matchScore * (1 - weight) + frequencyScore * weight`, where `weight` is configurable. Frequency is normalized across the result set (highest frequency = 100)
+7. A floating dropdown is rendered via `logseq.provideUI` (key `ac-dropdown`). The dropdown shows completion suffixes (text after the typed prefix) in ghost-like opacity. The list is capped at 4 items; if more exist, a `…` indicator is shown
 8. The dropdown container's drag/resize handles are hidden and pointer events are adjusted. The editor retains focus so the user can continue typing. Navigating the list is handled via Logseq command shortcuts (`Alt+J`/`Alt+,`)
-9. Confirming is done via `Ctrl+Space` (a Logseq command shortcut) — no DOM focus shifting is needed. When multiple suggestions are visible, `longestCommonPrefix` computes the longest shared prefix across all suggestions; only that prefix is inserted as plain text. When exactly one suggestion exists, it is inserted fully with `[[page]]` / `#tag` wrapping
+9. Confirming is done via `Ctrl+Space` (a Logseq command shortcut) — no DOM focus shifting is needed. When multiple suggestions are visible, `longestCommonPrefix` computes the longest shared prefix across all suggestions; only that prefix is inserted as plain text. When exactly one suggestion exists, it is inserted in full
 10. On confirmation, `logseq.Editor.updateBlock` replaces the partial word with the completed text. The previously focused editor element is restored after the container is removed
 
 ## License
