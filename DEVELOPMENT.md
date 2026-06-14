@@ -38,8 +38,9 @@ npm run dev
 5. Results are merged: if a name matches both a page and a tag, the page entry is dropped (tags take priority over pages)
 6. Results are ranked by a blended score: `matchScore * (1 - weight) + frequencyScore * weight`, where `weight` is configurable per type (page/tag/dictionary). Frequency is normalized across the result set (highest frequency = 100). Ties fall back to type order (dictionary → tag → page) for deterministic sorting
 7. A floating dropdown is rendered via `logseq.provideUI` (key `ac-dropdown`). The dropdown shows completion suffixes (text after the typed prefix) in ghost-like opacity. Pages show ` (p)` and tags ` (t)` as type labels. Dictionary words have no label. The list is capped at 4 items; if more exist, a `…` indicator is shown
-8. The dropdown container (in Logseq's parent document) is focused via `tabIndex = 0` + `focus()`, and a keydown listener intercepts `Tab` to confirm the selection — this avoids conflicting with Logseq's own `editor/indent` shortcut
-9. On selection, `logseq.Editor.updateBlock` replaces the partial word. The previously focused editor element is restored after the container is removed
+8. The dropdown container's drag/resize handles are hidden and pointer events are adjusted. The editor retains focus so the user can continue typing. Navigating the list is handled via Logseq command shortcuts (`Alt+J`/`Alt+,`)
+9. Confirming a selection is done via `Ctrl+Space` (a Logseq command shortcut) — no DOM focus shifting is needed
+10. On selection, `logseq.Editor.updateBlock` replaces the partial word. The previously focused editor element is restored after the container is removed
 
 ## License
 

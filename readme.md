@@ -4,7 +4,7 @@ Suggests **pages**, **tags**, and **dictionary words** while you type in Logseq.
 
 ## Use Case
 
-When you type plain text, a compact dropdown appears showing completion suffixes (the remaining part of the word). Each entry is shown as gray ghost text — just the suffix after what you've already typed. Pages and tags are labeled with a small `(p)` or `(t)`; dictionary words have no label. The dropdown shows up to 4 items and is positioned below the current block. Click a suggestion (or press `Alt+J`/`Alt+,` to navigate and `Tab` to confirm) to replace the partial word. When enabled, a single match can be inserted automatically.
+When you type plain text, a compact dropdown appears showing completion suffixes (the remaining part of the word). Each entry is shown as gray ghost text — just the suffix after what you've already typed. Pages and tags are labeled with a small `(p)` or `(t)`; dictionary words have no label. The dropdown shows up to 4 items and is positioned below the current block. Click a suggestion (or press `Alt+J`/`Alt+,` to navigate and `Ctrl+Space` to confirm) to replace the partial word. When enabled, a single match can be inserted automatically.
 
 ### What changes?
 
@@ -28,7 +28,7 @@ When a name matches both a page and a tag, only the tag entry is shown (tags tak
 |----------|--------|
 | `Alt+J` | Next suggestion |
 | `Alt+,` | Previous suggestion |
-| `Tab` | Confirm selected suggestion |
+| `Ctrl+Space` | Confirm selected suggestion |
 | `Escape` | Dismiss suggestion dropdown |
 
 ## Configuration

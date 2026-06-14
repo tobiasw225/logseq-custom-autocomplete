@@ -3,7 +3,7 @@ import type { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin";
 import { isInIgnoredContext } from "./context";
 import { learnFromBlockContent, loadSessionWords, preloadSessionWords } from "./session";
 import { getSuggestions } from "./suggestions";
-import { getSelected, hide, init as initUI, isVisible, onTabConfirm, selectNext, selectPrev, show } from "./ui-host";
+import { getSelected, hide, init as initUI, isVisible, selectNext, selectPrev, show } from "./ui-host";
 import { getWordAtCursor } from "./utils";
 import type { Suggestion } from "./utils";
 
@@ -209,8 +209,8 @@ function main(): void {
   logseq.App.registerCommandShortcut({ binding: "alt+," }, () => {
     if (isVisible()) selectPrev();
   });
-  onTabConfirm(() => {
-    confirmSuggestion().catch(console.error);
+  logseq.App.registerCommandShortcut({ binding: "ctrl+space" }, () => {
+    if (isVisible()) confirmSuggestion().catch(console.error);
   });
 }
 

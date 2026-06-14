@@ -12,7 +12,6 @@ let hasMore = false;
 let posX = 0;
 let posY = 0;
 let currentPrefix = "";
-let confirmCallback: (() => void) | null = null;
 let lastFocusedEditor: HTMLElement | null = null;
 
 export function isVisible(): boolean {
@@ -140,15 +139,6 @@ function hideFloatingHandles(): void {
         if (contentEl) contentEl.style.pointerEvents = "auto";
         container.removeAttribute("draggable");
         container.removeAttribute("resizable");
-        (container as HTMLElement).tabIndex = 0;
-        (container as HTMLElement).focus({ preventScroll: true });
-        (container as HTMLElement).addEventListener("keydown", (e) => {
-          if (e.key === "Tab" && visible) {
-            e.preventDefault();
-            e.stopPropagation();
-            confirmCallback?.();
-          }
-        });
         return;
       } catch {
         /* cross-origin */
@@ -163,10 +153,6 @@ function onKeyDown(e: KeyboardEvent): void {
   if (e.key === "Escape") {
     hide();
   }
-}
-
-export function onTabConfirm(cb: () => void): void {
-  confirmCallback = cb;
 }
 
 export function init(): void {
