@@ -154,11 +154,37 @@ function onKeyDown(e: KeyboardEvent): void {
   }
 }
 
+function onMouseDown(e: MouseEvent): void {
+  if (!visible) return;
+  try {
+    const target = e.target as HTMLElement;
+    if (target.closest(".ac-dropdown")) return;
+    hide();
+  } catch {
+    /* cross-origin */
+  }
+}
+
+function onFocusOut(e: FocusEvent): void {
+  if (!visible) return;
+  const related = e.relatedTarget as HTMLElement | null;
+  if (related?.closest?.(".ac-dropdown")) return;
+  setTimeout(() => {
+    if (!document.querySelector(".ac-dropdown")) {
+      visible = false;
+    }
+  }, 0);
+}
+
 export function init(): void {
   document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("mousedown", onMouseDown);
+  document.addEventListener("focusout", onFocusOut);
   try {
     if (window.parent?.document && window.parent.document !== document) {
       window.parent.document.addEventListener("keydown", onKeyDown, true);
+      window.parent.document.addEventListener("mousedown", onMouseDown, true);
+      window.parent.document.addEventListener("focusout", onFocusOut, true);
     }
   } catch {
     /* cross-origin */
