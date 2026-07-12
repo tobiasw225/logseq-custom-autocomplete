@@ -1,3 +1,10 @@
+## [0.8.1](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.8.0...v0.8.1) (2026-07-12)
+
+
+### Bug Fixes
+
+* release focus after click ([#38](https://github.com/tobiasw225/logseq-custom-autocomplete/issues/38)) ([6e898ac](https://github.com/tobiasw225/logseq-custom-autocomplete/commit/6e898acf5fda65d35d3b2a37683d1c9d02b6870a))
+
 # [0.8.0](https://github.com/tobiasw225/logseq-custom-autocomplete/compare/v0.7.2...v0.8.0) (2026-06-14)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "logseq-autocomplete",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Autocomplete suggestions while typing in Logseq — powered by a custom dictionary that learns your words",
   "main": "dist/index.html",
   "repository": {
