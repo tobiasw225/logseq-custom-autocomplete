@@ -8,6 +8,7 @@ const provideUI = vi.fn();
 const provideStyle = vi.fn();
 
 beforeEach(() => {
+  vi.useFakeTimers();
   vi.resetAllMocks();
   (globalThis as any).logseq = {
     provideModel,
@@ -18,11 +19,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  delete (globalThis as any).logseq;
-  vi.restoreAllMocks();
-});
-
-afterEach(() => {
+  vi.clearAllTimers();
+  vi.useRealTimers();
   delete (globalThis as any).logseq;
   vi.restoreAllMocks();
 });

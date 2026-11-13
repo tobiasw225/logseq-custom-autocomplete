@@ -1,92 +1,54 @@
-import { splitWords } from "./word";
+import { createSessionPersistence } from "./session-persistence";
+import type { SessionSettingsPort } from "./session-persistence";
+import { preloadWords } from "./session-preload";
+import type { DatascriptQuery } from "./session-preload";
+import { createWordStore } from "./word-store";
 
-const SESSION_KEY = "sessionDictionary";
+const store = createWordStore();
 
-const sessionWords = new Map<string, number>();
+const settingsPort: SessionSettingsPort = {
+  read(key) {
+    return (logseq.settings as Record<string, unknown> | undefined)?.[key];
+  },
+  write(patch) {
+    logseq.updateSettings(patch);
+  },
+};
 
-let persistTimer: ReturnType<typeof setTimeout> | null = null;
+const persistence = createSessionPersistence(store, settingsPort);
 
 export function learnFromBlockContent(content: string, cursorWord: string | null): void {
-  const words = splitWords(content);
-  for (const w of words) {
-    const lower = w.toLowerCase();
-    if (cursorWord && lower === cursorWord.toLowerCase()) continue;
-    sessionWords.set(lower, (sessionWords.get(lower) ?? 0) + 1);
-  }
-  schedulePersist();
+  store.learn(content, cursorWord);
+  persistence.scheduleSave();
 }
 
 export function searchSessionWords(prefix: string): string[] {
-  if (!prefix || prefix.length < 1) return [];
-  const lower = prefix.toLowerCase();
-  const results: Array<[string, number]> = [];
-  for (const [word, freq] of sessionWords) {
-    if (word.startsWith(lower)) results.push([word, freq]);
-  }
-  results.sort((a, b) => b[1] - a[1]);
-  return results.map(([w]) => w);
+  return store.search(prefix);
 }
 
 export function getSessionFrequency(word: string): number {
-  return sessionWords.get(word.toLowerCase()) ?? 0;
+  return store.frequency(word);
 }
 
 export function resetSessionWords(): void {
-  sessionWords.clear();
-  if (persistTimer) {
-    clearTimeout(persistTimer);
-    persistTimer = null;
-  }
+  store.clear();
+  persistence.dispose();
 }
 
 export function loadSessionWords(): void {
-  try {
-    const raw = (logseq.settings as Record<string, unknown>)?.[SESSION_KEY];
-    if (!raw || typeof raw !== "string") return;
-    const entries: Array<[string, number]> = JSON.parse(raw);
-    for (const [word, freq] of entries) {
-      sessionWords.set(word, freq);
-    }
-  } catch {
-    // corrupted data, ignore
-  }
+  persistence.load();
 }
 
 export function saveSessionWords(): void {
-  const entries = Array.from(sessionWords.entries());
-  logseq.updateSettings({ [SESSION_KEY]: JSON.stringify(entries) });
+  persistence.save();
 }
 
 export function schedulePersist(): void {
-  if (persistTimer) clearTimeout(persistTimer);
-  persistTimer = setTimeout(() => {
-    saveSessionWords();
-  }, 2000);
+  persistence.scheduleSave();
 }
 
 export async function preloadSessionWords(): Promise<void> {
-  let results: Array<[string]> = [];
-  try {
-    results =
-      (await logseq.DB.datascriptQuery("[:find ?content :limit 2000 :where [?b :block/content ?content]]")) ?? [];
-  } catch {
-    return;
-  }
-
-  let added = 0;
-  for (const [content] of results) {
-    for (const w of splitWords(content)) {
-      if (w.length > 3) {
-        const lower = w.toLowerCase();
-        if (!sessionWords.has(lower)) {
-          sessionWords.set(lower, 1);
-          added++;
-        }
-      }
-    }
-  }
-
-  if (added > 0) {
-    saveSessionWords();
-  }
+  const query: DatascriptQuery = (input) => logseq.DB.datascriptQuery(input);
+  const added = await preloadWords(store, query);
+  if (added) persistence.save();
 }

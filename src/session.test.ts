@@ -21,119 +21,8 @@ function setSettings(overrides: Record<string, unknown> = {}) {
       Object.assign(mutableSettings, patch);
     }),
   };
+  return mutableSettings;
 }
-
-beforeEach(() => {
-  resetSessionWords();
-});
-
-afterEach(() => {
-  delete (globalThis as any).logseq;
-});
-
-describe("learnFromBlockContent", () => {
-  it("adds new words from content", () => {
-    learnFromBlockContent("hello world", null);
-    expect(searchSessionWords("he")).toContain("hello");
-    expect(searchSessionWords("wo")).toContain("world");
-  });
-
-  it("increments frequency for repeated words", () => {
-    learnFromBlockContent("hello", null);
-    learnFromBlockContent("hello world", null);
-    expect(getSessionFrequency("hello")).toBe(2);
-    expect(getSessionFrequency("world")).toBe(1);
-  });
-
-  it("skips the cursor word", () => {
-    learnFromBlockContent("hello world", "hello");
-    expect(searchSessionWords("he")).toEqual([]);
-    expect(searchSessionWords("wo")).toContain("world");
-  });
-
-  it("handles unicode letters", () => {
-    learnFromBlockContent("hallo wörld grüße", null);
-    expect(searchSessionWords("wö")).toContain("wörld");
-    expect(searchSessionWords("gr")).toContain("grüße");
-  });
-
-  it("handles empty content", () => {
-    learnFromBlockContent("", null);
-    expect(searchSessionWords("a")).toEqual([]);
-  });
-
-  it("handles content with no word characters", () => {
-    learnFromBlockContent("!!! @@ $$", null);
-    expect(searchSessionWords("a")).toEqual([]);
-  });
-
-  it("handles hyphenated words", () => {
-    learnFromBlockContent("use logseq-autocomplete", null);
-    expect(searchSessionWords("lo")).toContain("logseq-autocomplete");
-  });
-
-  it("learns and searches single-character words", () => {
-    learnFromBlockContent("a b c hello", null);
-    expect(searchSessionWords("he")).toContain("hello");
-    expect(searchSessionWords("a")).toEqual(["a"]);
-  });
-});
-
-describe("searchSessionWords", () => {
-  it("returns prefix matches sorted by frequency descending", () => {
-    learnFromBlockContent("apple", null);
-    learnFromBlockContent("apple", null);
-    learnFromBlockContent("apple", null);
-    learnFromBlockContent("application", null);
-    learnFromBlockContent("application", null);
-    learnFromBlockContent("apt", null);
-
-    const result = searchSessionWords("ap");
-    expect(result).toEqual(["apple", "application", "apt"]);
-  });
-
-  it("returns empty array when no match", () => {
-    learnFromBlockContent("hello world", null);
-    expect(searchSessionWords("xyz")).toEqual([]);
-  });
-
-  it("returns results for single-character prefix", () => {
-    learnFromBlockContent("hello", null);
-    expect(searchSessionWords("h")).toEqual(["hello"]);
-  });
-
-  it("case-insensitive prefix matching", () => {
-    learnFromBlockContent("Hello", null);
-    expect(searchSessionWords("hel")).toContain("hello");
-    expect(searchSessionWords("Hel")).toContain("hello");
-  });
-});
-
-describe("getSessionFrequency", () => {
-  it("returns frequency for learned word", () => {
-    learnFromBlockContent("hello", null);
-    learnFromBlockContent("hello", null);
-    expect(getSessionFrequency("hello")).toBe(2);
-  });
-
-  it("returns 0 for unknown word", () => {
-    expect(getSessionFrequency("nonexistent")).toBe(0);
-  });
-
-  it("case-insensitive lookup", () => {
-    learnFromBlockContent("Hello", null);
-    expect(getSessionFrequency("hello")).toBe(1);
-  });
-});
-
-describe("resetSessionWords", () => {
-  it("clears all session words", () => {
-    learnFromBlockContent("hello world", null);
-    expect(searchSessionWords("he")).not.toEqual([]);
-    resetSessionWords();
-    expect(searchSessionWords("he")).toEqual([]);
-  });
-});
 
 function mockDB(rows: Array<[string]> = []) {
   const current = (globalThis as any).logseq;
@@ -144,116 +33,81 @@ function mockDB(rows: Array<[string]> = []) {
   }
 }
 
-describe("preloadSessionWords", () => {
-  beforeEach(() => {
-    resetSessionWords();
-    setSettings();
-    mockDB();
+beforeEach(() => {
+  resetSessionWords();
+  setSettings();
+});
+
+afterEach(() => {
+  resetSessionWords();
+  vi.useRealTimers();
+  delete (globalThis as any).logseq;
+});
+
+describe("session facade", () => {
+  it("learns words and exposes search plus frequency", () => {
+    learnFromBlockContent("hello world", null);
+    learnFromBlockContent("hello", null);
+    learnFromBlockContent("hello again", "hello");
+
+    expect(searchSessionWords("he")).toContain("hello");
+    expect(searchSessionWords("wo")).toContain("world");
+    expect(getSessionFrequency("hello")).toBe(2);
   });
 
-  it("skips DB query when no logseq.DB is available", async () => {
-    delete (globalThis as any).logseq.DB;
-    await preloadSessionWords();
+  it("clears words on reset", () => {
+    learnFromBlockContent("hello world", null);
+    resetSessionWords();
     expect(searchSessionWords("he")).toEqual([]);
   });
 
-  it("extracts words longer than 3 characters from blocks", async () => {
-    mockDB([["hello world foo bar some"], ["longer text here please"]]);
-    await preloadSessionWords();
-    expect(searchSessionWords("hel")).toContain("hello");
-    expect(searchSessionWords("wor")).toContain("world");
-    expect(searchSessionWords("lon")).toContain("longer");
-    expect(searchSessionWords("foo")).toEqual([]);
-    expect(searchSessionWords("bar")).toEqual([]);
-  });
+  it("schedules persistence after learning", () => {
+    vi.useFakeTimers();
+    const settings = setSettings();
+    const updateSettings = (globalThis as any).logseq.updateSettings;
 
-  it("handles unicode letters", async () => {
-    mockDB([["wörld münchen café"]]);
-    await preloadSessionWords();
-    expect(searchSessionWords("wör")).toContain("wörld");
-    expect(searchSessionWords("mün")).toContain("münchen");
-    expect(searchSessionWords("caf")).toContain("café");
-  });
-
-  it("handles hyphenated words", async () => {
-    mockDB([["logseq-autocomplete is great"]]);
-    await preloadSessionWords();
-    expect(searchSessionWords("lo")).toContain("logseq-autocomplete");
-    expect(searchSessionWords("gr")).toContain("great");
-  });
-
-  it("preserves existing session word frequencies", async () => {
-    learnFromBlockContent("hello world", null);
     learnFromBlockContent("hello", null);
-    expect(getSessionFrequency("hello")).toBe(2);
+    expect(updateSettings).not.toHaveBeenCalled();
 
-    mockDB([["hello newword"]]);
-    await preloadSessionWords();
-
-    expect(getSessionFrequency("hello")).toBe(2);
-    expect(getSessionFrequency("world")).toBe(1);
-    expect(getSessionFrequency("newword")).toBe(1);
+    vi.advanceTimersByTime(2000);
+    expect(updateSettings).toHaveBeenCalledTimes(1);
+    expectationPersisted(settings, "hello", 1);
   });
 
-  it("persists new words via saveSessionWords", async () => {
+  it("cancels a pending persist on reset", () => {
+    vi.useFakeTimers();
     setSettings();
-    mockDB([["hello world"]]);
-    await preloadSessionWords();
+    const updateSettings = (globalThis as any).logseq.updateSettings;
 
-    const raw = ((globalThis as any).logseq.settings as Record<string, unknown>).sessionDictionary as string;
-    const parsed: Array<[string, number]> = JSON.parse(raw);
-    expect(parsed).toContainEqual(["hello", 1]);
-    expect(parsed).toContainEqual(["world", 1]);
+    learnFromBlockContent("hello", null);
+    resetSessionWords();
+    vi.advanceTimersByTime(2000);
+
+    expect(updateSettings).not.toHaveBeenCalled();
   });
-});
 
-describe("persistence", () => {
-  it("saveSessionWords serializes map as JSON string via updateSettings", () => {
-    setSettings();
+  it("saves the current words via updateSettings", () => {
+    const settings = setSettings();
     learnFromBlockContent("hello world", null);
     learnFromBlockContent("hello", null);
 
     saveSessionWords();
 
-    const updateCalls = (globalThis as any).logseq.updateSettings.mock.calls;
-    expect(updateCalls.length).toBe(1);
-    const raw = updateCalls[0][0].sessionDictionary;
-    const parsed: Array<[string, number]> = JSON.parse(raw);
-    expect(parsed).toContainEqual(["hello", 2]);
-    expect(parsed).toContainEqual(["world", 1]);
+    expectationPersisted(settings, "hello", 2);
+    expectationPersisted(settings, "world", 1);
   });
 
-  it("loadSessionWords restores map from settings JSON", () => {
+  it("loads words from settings JSON", () => {
     setSettings({ sessionDictionary: '[["hello",3],["world",1]]' });
+
     loadSessionWords();
 
     expect(searchSessionWords("he")).toContain("hello");
-    expect(searchSessionWords("wo")).toContain("world");
     expect(getSessionFrequency("hello")).toBe(3);
-    expect(getSessionFrequency("world")).toBe(1);
   });
 
-  it("loadSessionWords handles empty settings gracefully", () => {
-    setSettings({ sessionDictionary: "" });
-    loadSessionWords();
-    expect(searchSessionWords("a")).toEqual([]);
-  });
-
-  it("loadSessionWords handles missing settings key gracefully", () => {
-    setSettings({});
-    loadSessionWords();
-    expect(searchSessionWords("a")).toEqual([]);
-  });
-
-  it("loadSessionWords handles corrupted JSON gracefully", () => {
-    setSettings({ sessionDictionary: "not-json-at-all" });
-    loadSessionWords();
-    expect(searchSessionWords("a")).toEqual([]);
-  });
-
-  it("full round-trip: learn → save → reset → load → same words available", () => {
-    setSettings();
-
+  it("round-trips learn, save, reset, load", () => {
+    const settings = setSettings();
     learnFromBlockContent("persist test word", null);
     learnFromBlockContent("persist", null);
     saveSessionWords();
@@ -261,10 +115,46 @@ describe("persistence", () => {
     resetSessionWords();
     expect(searchSessionWords("per")).toEqual([]);
 
+    (globalThis as any).logseq.settings = settings;
     loadSessionWords();
+
     expect(searchSessionWords("per")).toContain("persist");
-    expect(searchSessionWords("tes")).toContain("test");
-    expect(searchSessionWords("wor")).toContain("word");
     expect(getSessionFrequency("persist")).toBe(2);
   });
 });
+
+describe("preloadSessionWords wiring", () => {
+  it("preloads words from datascript and persists immediately", async () => {
+    const settings = setSettings();
+    mockDB([["hello world"]]);
+
+    await preloadSessionWords();
+
+    expect(searchSessionWords("hel")).toContain("hello");
+    expectationPersisted(settings, "hello", 1);
+  });
+
+  it("does nothing when logseq.DB is unavailable", async () => {
+    setSettings();
+    delete (globalThis as any).logseq.DB;
+
+    await expect(preloadSessionWords()).resolves.toBeUndefined();
+    expect(searchSessionWords("he")).toEqual([]);
+  });
+
+  it("swallows datascript query failures", async () => {
+    setSettings();
+    (globalThis as any).logseq.DB = {
+      datascriptQuery: vi.fn().mockRejectedValue(new Error("query failed")),
+    };
+
+    await expect(preloadSessionWords()).resolves.toBeUndefined();
+    expect(searchSessionWords("he")).toEqual([]);
+  });
+});
+
+function expectationPersisted(settings: Record<string, unknown>, word: string, frequency: number) {
+  const raw = settings.sessionDictionary as string;
+  const parsed: Array<[string, number]> = JSON.parse(raw);
+  expect(parsed).toContainEqual([word, frequency]);
+}
