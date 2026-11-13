@@ -27,3 +27,7 @@ The pure result of `computeReplacement()`: the cursor word, its index in the blo
 ## Completion Write Path
 
 `applyCompletion()` in `completion.ts` is the single seam that reads the block and cursor, validates the replacement, calls `updateBlock`, and then dismisses the dropdown and resets the dedupe prefix. Cleanup runs on every exit path, including validation failures and editor errors.
+
+## Suggestion Session
+
+The controller that owns the lifecycle of a suggestion attempt. `createSuggestionSession()` receives editor, UI, settings, clock, query, and learn ports, then exposes four commands: `onContentChanged`, `accept`, `dismiss`, and `dispose`. It keeps the dedupe prefix, debounce timer, reentrancy guard, and throttle interval private, delegates writes to `applyCompletion`, and resets its prefix when a completion is applied or dismissed.
