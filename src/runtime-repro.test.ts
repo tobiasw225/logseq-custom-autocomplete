@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("@logseq/libs", () => ({}));
 
 beforeEach(() => {
+  vi.useFakeTimers();
   (globalThis as any).logseq = {
     provideModel: vi.fn(),
     provideUI: vi.fn(),
@@ -43,6 +44,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.clearAllTimers();
+  vi.useRealTimers();
   delete (globalThis as any).logseq;
   delete (globalThis as any).document;
 });
