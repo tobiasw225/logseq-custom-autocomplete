@@ -5,31 +5,6 @@ export interface Suggestion {
   frequency?: number;
 }
 
-export function getWordBounds(
-  content: string,
-  cursorPos: number,
-): { start: number; end: number; word: string; prefix: string } | null {
-  if (!content || cursorPos < 0 || cursorPos > content.length) return null;
-
-  const wordChars = /[a-zA-Z0-9_\-\p{L}]/u;
-
-  let start = cursorPos;
-  while (start > 0 && wordChars.test(content[start - 1])) start--;
-
-  let end = cursorPos;
-  while (end < content.length && wordChars.test(content[end])) end++;
-
-  const word = content.slice(start, end);
-  const prefix = content.slice(start, cursorPos);
-  return { start, end, word, prefix };
-}
-
-export function getWordAtCursor(content: string, cursorPos: number, minLength = 1): string | null {
-  const bounds = getWordBounds(content, cursorPos);
-  if (!bounds || bounds.word.length < minLength) return null;
-  return bounds.word;
-}
-
 export function longestCommonPrefix(suggestions: Suggestion[], typedWord: string): string | null {
   const lowerTyped = typedWord.toLowerCase();
   const texts = suggestions.map((s) => s.text.toLowerCase()).filter((t) => t.startsWith(lowerTyped));
