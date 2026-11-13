@@ -215,4 +215,27 @@ describe("confirmSuggestion", () => {
 
     expect(logseq.Editor.updateBlock).toHaveBeenCalledWith("test-uuid", "Blaupause");
   });
+
+  it("inserts the common prefix when multiple suggestions are visible", async () => {
+    const logseq = (globalThis as any).logseq;
+    logseq.Editor.getCurrentBlock.mockResolvedValue({
+      uuid: "test-uuid",
+      content: "bl",
+    });
+    logseq.Editor.getEditingCursorPosition.mockResolvedValue({
+      pos: 2,
+      rect: { left: 100, right: 110, top: 200, bottom: 224, width: 10, height: 24 },
+    });
+
+    mockGetCurrentSuggestions.mockReturnValue([
+      { text: "blauwal", type: "dictionary", score: 100 },
+      { text: "blaupause", type: "dictionary", score: 90 },
+    ]);
+    mockIsVisible.mockReturnValue(true);
+
+    const { confirmSuggestion } = await import("./main");
+    await confirmSuggestion();
+
+    expect(logseq.Editor.updateBlock).toHaveBeenCalledWith("test-uuid", "blau");
+  });
 });

@@ -35,8 +35,9 @@ npm run dev
 6. Results are ranked by a blended score: `matchScore * (1 - weight) + frequencyScore * weight`, where `weight` is configurable. Frequency is normalized across the result set (highest frequency = 100)
 7. A floating dropdown is rendered via `logseq.provideUI` (key `ac-dropdown`). The dropdown shows completion suffixes (text after the typed prefix) in ghost-like opacity. The list is capped at 4 items; if more exist, a `…` indicator is shown
 8. The dropdown container's drag/resize handles are hidden and pointer events are adjusted. The editor retains focus so the user can continue typing. Navigating the list is handled via Logseq command shortcuts (`Alt+J`/`Alt+,`)
-9. Confirming is done via `Ctrl+Space` (a Logseq command shortcut) — no DOM focus shifting is needed. When multiple suggestions are visible, `longestCommonPrefix` computes the longest shared prefix across all suggestions; only that prefix is inserted as plain text. When exactly one suggestion exists, it is inserted in full
-10. On confirmation, `logseq.Editor.updateBlock` replaces the partial word with the completed text. The previously focused editor element is restored after the container is removed
+9. Confirming is done via `Ctrl+Space` (a Logseq command shortcut) — no DOM focus shifting is needed. When multiple suggestions are visible, the `commonPrefix` strategy computes the longest shared prefix across all suggestions; only that prefix is inserted as plain text. When exactly one suggestion exists, the `suggestion` strategy inserts it in full
+10. `src/completion.ts` owns the write path. `computeReplacement` is pure and decides the replacement text and splice; `applyCompletion` reads the block and cursor, updates the block, and always dismisses the dropdown and resets the dedupe prefix on every exit path. Auto-expand reuses the same seam with the captured word as `expectedWord`, so a stale suggestion is never written into a changed word
+11. On confirmation, `logseq.Editor.updateBlock` replaces the partial word with the completed text. The previously focused editor element is restored after the container is removed
 
 ## License
 
