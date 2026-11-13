@@ -1,54 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { getWordAtCursor, longestCommonPrefix, matchScore } from "./utils";
+import { longestCommonPrefix, matchScore } from "./utils";
 import type { Suggestion } from "./utils";
-
-describe("getWordAtCursor", () => {
-  it("returns the word at cursor position", () => {
-    expect(getWordAtCursor("hello world", 6)).toBe("world");
-  });
-
-  it("returns the word at cursor in the middle of a word", () => {
-    expect(getWordAtCursor("hello world", 8)).toBe("world");
-  });
-
-  it("returns word at start of content", () => {
-    expect(getWordAtCursor("hello world", 2)).toBe("hello");
-  });
-
-  it("returns single character words with default minLength=1", () => {
-    expect(getWordAtCursor("a", 0)).toBe("a");
-    expect(getWordAtCursor("ab", 1)).toBe("ab");
-  });
-
-  it("returns null for empty content", () => {
-    expect(getWordAtCursor("", 0)).toBeNull();
-  });
-
-  it("handles unicode letters", () => {
-    expect(getWordAtCursor("hallo wörld", 7)).toBe("wörld");
-  });
-
-  it("handles hyphenated words", () => {
-    expect(getWordAtCursor("use logseq-autocomplete", 5)).toBe("logseq-autocomplete");
-  });
-
-  it("handles cursor at end of word", () => {
-    expect(getWordAtCursor("hello world", 11)).toBe("world");
-  });
-
-  it("handles cursor at end of string with trailing punctuation", () => {
-    expect(getWordAtCursor("hello world.", 11)).toBe("world");
-  });
-
-  it("returns the word before cursor when cursor is on boundary", () => {
-    expect(getWordAtCursor("hello world", 5)).toBe("hello");
-  });
-
-  it("respects minLength parameter", () => {
-    expect(getWordAtCursor("hello a", 7, 1)).toBe("a");
-    expect(getWordAtCursor("hello a", 7, 2)).toBeNull();
-  });
-});
 
 describe("matchScore", () => {
   it("exact match scores 100", () => {

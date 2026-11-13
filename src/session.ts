@@ -1,3 +1,5 @@
+import { splitWords } from "./word";
+
 const SESSION_KEY = "sessionDictionary";
 
 const sessionWords = new Map<string, number>();
@@ -5,7 +7,7 @@ const sessionWords = new Map<string, number>();
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function learnFromBlockContent(content: string, cursorWord: string | null): void {
-  const words = content.match(/[a-zA-Z0-9_\-\p{L}]+/gu) ?? [];
+  const words = splitWords(content);
   for (const w of words) {
     const lower = w.toLowerCase();
     if (cursorWord && lower === cursorWord.toLowerCase()) continue;
@@ -71,12 +73,9 @@ export async function preloadSessionWords(): Promise<void> {
     return;
   }
 
-  const wordPattern = /[a-zA-Z0-9_\-\p{L}]+/gu;
   let added = 0;
   for (const [content] of results) {
-    const matches = content.match(wordPattern);
-    if (!matches) continue;
-    for (const w of matches) {
+    for (const w of splitWords(content)) {
       if (w.length > 3) {
         const lower = w.toLowerCase();
         if (!sessionWords.has(lower)) {

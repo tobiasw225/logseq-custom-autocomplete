@@ -13,8 +13,9 @@ import {
   selectPrev,
   show,
 } from "./ui-host";
-import { getWordAtCursor, longestCommonPrefix } from "./utils";
+import { longestCommonPrefix } from "./utils";
 import type { Suggestion } from "./utils";
+import { getWordAtCursor, isWordChar } from "./word";
 
 function settingsSchema(): SettingSchemaDesc[] {
   return [
@@ -89,7 +90,7 @@ export async function checkAndSuggest(): Promise<void> {
 
     const atEnd = cursorPos.pos >= content.length;
     const cursorChar = content[cursorPos.pos];
-    if (!atEnd && cursorChar && !/[a-zA-Z0-9_\-\p{L}]/u.test(cursorChar)) {
+    if (!atEnd && cursorChar && !isWordChar(cursorChar)) {
       if (isVisible()) hide();
       return;
     }
