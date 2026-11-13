@@ -1,5 +1,7 @@
 import "@logseq/libs";
 import type { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin";
+import { applyCompletion } from "./completion";
+import type { CompletionEditor, CompletionHooks } from "./completion";
 import { isInIgnoredContext } from "./context";
 import { learnFromBlockContent, loadSessionWords, preloadSessionWords } from "./session";
 import { getSuggestions } from "./suggestions";
@@ -13,8 +15,6 @@ import {
   selectPrev,
   show,
 } from "./ui-host";
-import { longestCommonPrefix } from "./utils";
-import type { Suggestion } from "./utils";
 import { getWordAtCursor, isWordChar } from "./word";
 
 function settingsSchema(): SettingSchemaDesc[] {
@@ -63,6 +63,21 @@ function settingsSchema(): SettingSchemaDesc[] {
 let lastPrefix = "";
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 let isProcessing = false;
+
+const completionEditor: CompletionEditor = {
+  getCurrentBlock: () => logseq.Editor.getCurrentBlock(),
+  getEditingCursorPosition: () => logseq.Editor.getEditingCursorPosition(),
+  updateBlock: (uuid, content) => logseq.Editor.updateBlock(uuid, content),
+};
+
+const completionHooks: CompletionHooks = {
+  dismiss: () => {
+    if (isVisible()) hide();
+  },
+  reset: () => {
+    lastPrefix = "";
+  },
+};
 
 export async function checkAndSuggest(): Promise<void> {
   if (isProcessing) return;
@@ -113,15 +128,13 @@ export async function checkAndSuggest(): Promise<void> {
         if (suggestions.length > 0) {
           const autoExpand = (logseq.settings as Record<string, unknown>)?.autoExpandOnUnique === true;
           if (autoExpand && suggestions.length === 1) {
-            const block = await logseq.Editor.getCurrentBlock();
-            const cursor = await logseq.Editor.getEditingCursorPosition();
-            if (block && cursor) {
-              const currentWord = getWordAtCursor(block.content ?? "", cursor.pos);
-              if (currentWord === word) {
-                await insertSuggestion(suggestions[0]);
-                return;
-              }
-            }
+            const applied = await applyCompletion(
+              completionEditor,
+              completionHooks,
+              { kind: "suggestion", suggestion: suggestions[0] },
+              word,
+            );
+            if (applied) return;
           }
           show(suggestions, cursorPos.rect.left, cursorPos.rect.top + cursorPos.rect.height + 4, word);
         } else if (isVisible()) {
@@ -144,63 +157,17 @@ export async function confirmSuggestion(): Promise<void> {
   if (suggestions.length === 0) return;
 
   if (suggestions.length === 1) {
-    await insertSuggestion(suggestions[0]);
+    await applyCompletion(completionEditor, completionHooks, {
+      kind: "suggestion",
+      suggestion: suggestions[0],
+    });
     return;
   }
 
-  await insertCommonPrefix(suggestions);
-}
-
-async function insertCommonPrefix(suggestions: Suggestion[]): Promise<void> {
-  try {
-    const block = await logseq.Editor.getCurrentBlock();
-    if (!block) return;
-    const content = block.content ?? "";
-    const cursorPos = await logseq.Editor.getEditingCursorPosition();
-    if (!cursorPos) return;
-    const word = getWordAtCursor(content, cursorPos.pos);
-    if (!word) return;
-
-    const completed = longestCommonPrefix(suggestions, word);
-    if (!completed) return;
-
-    const idx = content.indexOf(word, Math.max(0, cursorPos.pos - word.length));
-    if (idx === -1) return;
-    const newContent = content.slice(0, idx) + completed + content.slice(idx + word.length);
-    await logseq.Editor.updateBlock(block.uuid, newContent);
-  } catch (err) {
-    console.error("autocomplete insert error:", err);
-  }
-  hide();
-  lastPrefix = "";
-}
-
-async function insertSuggestion(suggestion: Suggestion): Promise<void> {
-  try {
-    const block = await logseq.Editor.getCurrentBlock();
-    if (!block) return;
-    const content = block.content ?? "";
-    const cursorPos = await logseq.Editor.getEditingCursorPosition();
-    if (!cursorPos) return;
-    const word = getWordAtCursor(content, cursorPos.pos);
-    if (!word) return;
-
-    const lowerWord = word.toLowerCase();
-    const lowerSugg = suggestion.text.toLowerCase();
-    const completed = lowerSugg.startsWith(lowerWord)
-      ? word + suggestion.text.slice(lowerWord.length)
-      : suggestion.text;
-
-    const idx = content.indexOf(word, Math.max(0, cursorPos.pos - word.length));
-    if (idx === -1) return;
-    const replacement = completed;
-    const newContent = content.slice(0, idx) + replacement + content.slice(idx + word.length);
-    await logseq.Editor.updateBlock(block.uuid, newContent);
-  } catch (err) {
-    console.error("autocomplete insert error:", err);
-  }
-  hide();
-  lastPrefix = "";
+  await applyCompletion(completionEditor, completionHooks, {
+    kind: "commonPrefix",
+    suggestions,
+  });
 }
 
 function main(): void {

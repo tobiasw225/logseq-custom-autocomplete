@@ -15,3 +15,15 @@ The adapter that stores the word store as JSON in the `sessionDictionary` settin
 ## Preload
 
 A one-shot import of existing block content into the word store. `preloadWords()` receives a `DatascriptQuery` capability, keeps only words longer than three characters, and returns whether anything new was added so the caller can persist immediately.
+
+## Completion
+
+Applying a suggestion to the block being edited. `completion` supports two strategies: `suggestion` replaces the typed word with one suggestion (preserving the user's casing on the typed portion), and `commonPrefix` inserts only the longest prefix shared by the visible suggestions.
+
+## Completion Replacement
+
+The pure result of `computeReplacement()`: the cursor word, its index in the block content, the replacement text, and the resulting content. It never touches the editor.
+
+## Completion Write Path
+
+`applyCompletion()` in `completion.ts` is the single seam that reads the block and cursor, validates the replacement, calls `updateBlock`, and then dismisses the dropdown and resets the dedupe prefix. Cleanup runs on every exit path, including validation failures and editor errors.
